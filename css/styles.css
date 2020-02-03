@@ -1,6 +1,6 @@
 :root {
-  --main-bg-color: #3b8587;   /*#3e67a8;*/
-  --darker-bg-color: #2f576e; /*#284470;*/
+  --main-bg-color: #3b8587;
+  --darker-bg-color: #2f576e;
   --table-hover-color: #314a70;
   --main-text-color: black;
   --visited-link-text-color: #273333;
@@ -12,7 +12,6 @@ html {
 }
 
 .main {
-  /*<-to address a clasS?*/
   text-align: center;
 }
 
@@ -73,8 +72,6 @@ table, th, td {
 tr:hover {
   background-color: var(--table-hover-color);
 }
-
-
 
 /*for the main navigation menu links*/
 a:link {
