@@ -1,6 +1,12 @@
+:root {
+  --main-bg-color: #3b8587;
+
+}
+
 html {
   margin: 0;
   padding: 0;
+  background-color: var(--main-bg-color);
 }
 
 .main {
@@ -8,6 +14,12 @@ html {
 }
 
 h1 {
-  align-content: center;
-  text-align: center;
+  align-content: left;
+  text-align: left;
+  margin-left: 10px;
+}
+
+li {
+  font-size: 24px;
+  margin: 10px 10px 10px 10px;
 }
