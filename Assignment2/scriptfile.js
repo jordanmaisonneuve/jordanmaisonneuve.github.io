@@ -12,6 +12,7 @@ keys.addEventListener('click', e => {
     const keyContent = key.textContent
     const displayedNum = display.textContent
     const previousKeyType = calculator.dataset.previousKeyType
+    const previousAns = calculator.dataset.previousAns
 
     //for updating the display
     if (!action) {
@@ -62,10 +63,13 @@ keys.addEventListener('click', e => {
       display.textContent = calculate(firstValue, operator, secondValue)
 
       calculator.dataset.previousKeyType = 'calculate'
+      calculator.dataset.previousAns = display.textContent
+
       console.log('equal key!')
     }
 
     if (action === 'previous_ans'){
+      display.textContent = calculator.dataset.previousAns
       console.log('previous ans!')
     }
 
