@@ -21,7 +21,6 @@ keys.addEventListener('click', e => {
       } else {
         display.textContent = displayedNum + keyContent
       }
-      console.log('number key!')
       calculator.dataset.previousKeyType = 'number'
     }
 
@@ -31,7 +30,6 @@ keys.addEventListener('click', e => {
       action === 'multiply' ||
       action === 'divide'
     ) {
-      console.log('operator key!')
       key.classList.add('is-depressed')
 
       calculator.dataset.firstValue = displayedNum
@@ -42,15 +40,13 @@ keys.addEventListener('click', e => {
     if (action === 'decimal') {
       if (!displayedNum.includes('.')) {
         display.textContent = displayedNum + '.'
-      } else if (previousKeyType === 'operator'){
+      } else if (previousKeyType === 'operator') {
         display.textContent = '0.'
       }
       calculator.dataset.previousKeyType = 'decimal'
     }
 
     if (action === 'clear') {
-      console.log('clear key!')
-
       display.textContent = '0'
       calculator.dataset.previousKeyType = 'clear'
     }
@@ -64,13 +60,10 @@ keys.addEventListener('click', e => {
 
       calculator.dataset.previousKeyType = 'calculate'
       calculator.dataset.previousAns = display.textContent
-
-      console.log('equal key!')
     }
 
-    if (action === 'previous_ans'){
+    if (action === 'previous_ans') {
       display.textContent = calculator.dataset.previousAns
-      console.log('previous ans!')
     }
 
     //undepress all depressed keys

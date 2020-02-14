@@ -1,3 +1,9 @@
+:root {
+  --main-bg-color: #3b8587;
+  --darker-bg-color: #2f576e;
+  --main-text-color: black;
+}
+
 html {
   align-content: center;
   align-items: center;
@@ -5,9 +11,9 @@ html {
 
 .calculator__keys {
   display: grid;
-  color: #3b8587;
+  color: var(--main-bg-color);
   grid-template-columns: 15% 15% 15% 15%;
-  grid-template-rows: 20% 20% 20% 20% 20%;
+  /*grid-template-rows: 20% 20% 20% 20% 20%;*/
 }
 
 .calculator__display {
@@ -17,7 +23,7 @@ html {
 button {
   font-size: 24px;
   color: black;
-  background-color: #3b8587;
+  background-color: var(--main-bg-color);
   border-radius: 6px;
   max-width: 100%;
   max-height: auto;
