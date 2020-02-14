@@ -1,11 +1,13 @@
-
-
+html {
+  align-content: center;
+  align-items: center;
+}
 
 .calculator__keys {
   display: grid;
-  color: lightblue;
-  grid-template-columns: 25% 25% 25% 25%;
- grid-template-rows: 20% 20% 20% 20% 20%;
+  color: #3b8587;
+  grid-template-columns: 15% 15% 15% 15%;
+  grid-template-rows: 20% 20% 20% 20% 20%;
 }
 
 .calculator__display {
@@ -15,7 +17,7 @@
 button {
   font-size: 24px;
   color: black;
-  background-color: lightgreen;
+  background-color: #3b8587;
   border-radius: 6px;
   max-width: 100%;
   max-height: auto;
