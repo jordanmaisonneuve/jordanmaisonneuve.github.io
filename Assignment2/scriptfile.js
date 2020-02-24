@@ -1,3 +1,9 @@
+/*
+Jordan Maisonneuve
+10153260
+B05
+*/
+
 const calculator = document.querySelector('.calculator')
 const keys = calculator.querySelector('.calculator__keys')
 const display = document.querySelector('.calculator__display')
