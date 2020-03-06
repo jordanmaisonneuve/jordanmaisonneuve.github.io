@@ -18,10 +18,11 @@ io.on('connection', function(socket) {
       usrName = 'user' + i;
       var usrNameMsg = 'Your username is: ' + usrName;
       console.log(usrNameMsg);
-      io.emit('chat message', usrNameMsg);
+
     }
   });
 
+  io.emit('chat message', 'Your username is: ' + usrName);
   userArray.push(usrName)
 
   socket.on('chat message', function(msg) {
@@ -29,11 +30,12 @@ io.on('connection', function(socket) {
     console.log('message: ' + msg);
     io.emit('chat message', msg);
 
-    const nickName = "/nick";
-
+    //chat functions
     if (msg === 'printUsrArray') {
       userArray.forEach(element => console.log(element));
     } else if (msg.includes("/nick")) {
+
+    } else if (msg.includes("/nickcolor")) {
 
     }
 
