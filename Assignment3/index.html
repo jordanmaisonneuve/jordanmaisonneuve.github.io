@@ -2,17 +2,55 @@
 <html>
   <head>
     <title>Jordans - Socket IO ChatRoom!</title>
-    <link href="css/styles.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
+    <style> /*TODO ALL THIS MOVED INTO STYLE SHEET!!!*/
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; }
+
+      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 80%; }
+      form input { border: 0; padding: 10px; width: 80%; margin-right: .5%; }
+      form button { width: 18%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+
+      #messages { list-style-type: none; margin: 0; padding: 0; height: 60%; border-style: solid; grid-column: 1; grid-row: 2; }
+      #messages li { padding: 5px 10px;  }
+      #messages li:nth-child(odd) { background: #eee; }
+
+      #userLst {list-style-type: none; margin: 0; padding: 0; border-style: solid; grid-column: 2; }
+      #userLst li { padding: 5px 10px; }
+      #userLst li:nth-child(odd) { background: #eee; }
+
+      #userNameDisplay { font-size: 24px; grid-row: 1; padding-top: 10px; padding-left: 10px; padding-bottom: 10px; border-style: solid; border: 20px; border-color: black;}
+
+      div.msgScreen {
+        display: grid;
+        grid-template-columns: 80% 20%;
+        grid-template-rows: 5% 80% 15%;
+      }
+
+      ul.userList {
+        grid-column: 2;
+        grid-row: 2;
+      }
+    </style>
   </head>
   <body>
-    <ul id="messages"></ul>
-    <form action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
-    </form>
+    <div class="msgScreen">
+      <p id="userNameDisplay">Your username is "TBD"</p>
+      <ul class="msgBox" id="messages"></ul>
+      <ul class="userList" id="userLst"></ul>
+      <form action="">
+        <input id="m" autocomplete="off" /><button>Send</button>
+      </form>
+    </div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-    <script>
+    <script> //this is my client script
       $(function () {
+
+        var objDiv = document.getElementById('messages');
+        objDiv.scrollTop = objDiv.scrollHeight;
+
         var socket = io();
         $('form').submit(function(e){
           e.preventDefault(); // prevents page reloading
@@ -20,8 +58,13 @@
           $('#m').val('');
           return false;
         });
+
         socket.on('chat message', function(msg){
           $('#messages').append($('<li>').text(msg));
+        });
+
+        socket.on('user list update', function(usrList){
+          $('#userLst').append($('<li>').text(usrList)); //TODO should not be append. - should overwrite.
         });
       });
     </script>

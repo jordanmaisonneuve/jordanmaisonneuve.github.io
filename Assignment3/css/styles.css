@@ -1,5 +1,5 @@
 * {
-  margin: margin: 0;
+  margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
@@ -13,18 +13,18 @@ form {
   padding: 3px;
   position: fixed;
   bottom: 0;
-  width: 100%;
+  width: 80%;
 }
 
 form input {
   border: 0;
   padding: 10px;
-  width: 90%;
+  width: 60%;
   margin-right: .5%;
 }
 
 form button {
-  width: 9%;
+  width: 15%;
   background: rgb(130, 224, 255);
   border: none;
   padding: 10px;
@@ -34,6 +34,8 @@ form button {
   list-style-type: none;
   margin: 0;
   padding: 0;
+  grid-column: 1;
+  grid-row: 2;
 }
 
 #messages li {
@@ -42,4 +44,39 @@ form button {
 
 #messages li:nth-child(odd) {
   background: #eee;
+}
+
+#userLst {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  grid-column: 2;
+}
+
+#userLst li {
+  padding: 5px 10px;
+}
+
+#userLst li:nth-child(odd) {
+  background: #eee;
+}
+
+#userNameDisplay {
+  font-size: 24px;
+  grid-row: 1;
+  padding-top: 10px;
+  padding-left: 10px;
+  border: 20px;
+  border-color: black;
+}
+
+.msgScreen {
+  display: grid;
+  grid-template-columns: 80% 20%;
+  grid-template-rows: 5% 80% 15%;
+}
+
+.userList {
+  grid-column: 2;
+  grid-row: 2;
 }
