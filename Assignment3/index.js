@@ -4,7 +4,7 @@ var app = require('express')();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 
-let firstConnection = true; //for username array.. tbd
+let firstConnection = true;
 let userArray = new Array();
 let chatLog = new Array();
 
@@ -34,7 +34,6 @@ io.on('connection', function(socket) {
 
   } else {
     userArray.forEach((item, i) => {
-      //console.log('in for loop userName: ' + item);
 
       if (usrName === item) { //condition to determine if username is unique.
         var randNames = ['anon', 'bigdaddy', 'soup', 'killerwhale', 'zack', '42069'];
@@ -83,7 +82,6 @@ io.on('connection', function(socket) {
       io.emit('chat message', userArray.toString());
 
     } else if (msg.includes("/nick ")) {
-      //todo: ensure nickname is not blank & is not already taken
       var newNickName = msg.slice(6);
       console.log('new nickname is:' + newNickName);
       io.emit('chat message', 'Your new nickname is: ' + newNickName);
@@ -98,14 +96,11 @@ io.on('connection', function(socket) {
       io.emit('nickname color change', nickColorRRGGBB.toString());
       //emit another event to change the color of the html text!
 
-      //todo: ensure nickColorRRGGBB is valid
       io.emit('chat message', 'You new nickname color is: ' + nickColorRRGGBB);
       console.log('nickname color RRGGBB is:' + nickColorRRGGBB);
     }
   });
 
-
-  //todo?: display which user disconnected?
   socket.on('disconnect', function() {
     console.log('a user disconnected');
     io.emit('chat message', 'A user disconnected.')

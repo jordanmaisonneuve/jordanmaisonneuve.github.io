@@ -6,7 +6,7 @@
     <title>Jordans - Socket IO ChatRoom!</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="css/styles.css">
-    <style> /*TODO ALL THIS MOVED INTO STYLE SHEET!!!*/
+    <style> 
       html { overflow: hidden; }
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { font: 13px Helvetica, Arial; }
@@ -15,12 +15,7 @@
       form input { border: 0; padding: 10px; width: 80%; margin-right: .5%; }
       form button { width: 18%; background: rgb(130, 224, 255); border: none; padding: 10px; }
 
-      #messages { list-style-type: none;
-                  margin: 0; padding: 0; height: 400px;
-                  overflow-y: scroll;
-                  border-style: solid;
-                   }
-
+      #messages { list-style-type: none; margin: 0; padding: 0; height: 400px; overflow-y: scroll; border-style: solid; }
       #messages li { padding: 5px 10px;  }
       #messages li:nth-child(odd) { background: #eef; }
 
@@ -86,7 +81,6 @@
 
         socket.on('update top display', function(usrName){
           $('#userNameDisplay').text('your username is ' + usrName);
-
         });
       });
     </script>
