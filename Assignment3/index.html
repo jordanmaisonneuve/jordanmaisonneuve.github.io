@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="css/styles.css">
     <style> /*TODO ALL THIS MOVED INTO STYLE SHEET!!!*/
+      html { overflow: hidden; }
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { font: 13px Helvetica, Arial; }
 
@@ -12,7 +13,7 @@
       form input { border: 0; padding: 10px; width: 80%; margin-right: .5%; }
       form button { width: 18%; background: rgb(130, 224, 255); border: none; padding: 10px; }
 
-      #messages { list-style-type: none; margin: 0; padding: 0; height: 60%; border-style: solid; grid-column: 1; grid-row: 2; }
+      #messages { list-style-type: none; margin: 0; padding: 0; height: 75%; overflow-y: scroll; border-style: solid; grid-column: 1; grid-row: 2; }
       #messages li { padding: 5px 10px;  }
       #messages li:nth-child(odd) { background: #eee; }
 
@@ -45,12 +46,14 @@
     </div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+
     <script> //this is my client script
+      $(function (){
+
+      });
+
+
       $(function () {
-
-        var objDiv = document.getElementById('messages');
-        objDiv.scrollTop = objDiv.scrollHeight;
-
         var socket = io();
         $('form').submit(function(e){
           e.preventDefault(); // prevents page reloading
@@ -61,6 +64,8 @@
 
         socket.on('chat message', function(msg){
           $('#messages').append($('<li>').text(msg));
+          //var element = document.getElementById('messages');
+          //element.scrollTop = objDiv.scrollHeight;
         });
 
         socket.on('user list update', function(usrList){
