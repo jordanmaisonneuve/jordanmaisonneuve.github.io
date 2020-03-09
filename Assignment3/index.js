@@ -50,12 +50,12 @@ io.on('connection', function(socket) {
   io.emit('chat message', 'Your username is: ' + usrName);
   //end username stuff
 
-  socket.on('chat message', function(msg) {
+  socket.on('chat message', function(from, msg) {
 
     //display/print the message. -- possibly put in a function.
-    console.log('message: '+ Date.now() + ' ' + msg); //TODO get username into msg
-    io.emit('chat message', Date.now() + ' ' + msg);
-    chatLog.push(Date.now() + ' ' + msg); //tbd format date?
+    console.log('message: ' + Date.now() + ' ' + from + ': ' + msg); //TODO get username into msg
+    io.emit('chat message', Date.now() + ' ' + from + ': ' + msg);
+    chatLog.push(Date.now() + ' ' + from + ' ' + msg); //tbd format date?
 
     //chat functions
     if (msg === 'printUsrArray') {
@@ -63,7 +63,7 @@ io.on('connection', function(socket) {
       console.log(userArray.toString());
       io.emit('chat message', userArray.toString());
 
-    } else if (msg.includes("/nick ")) {
+    } else if (msg.includes("/nick")) {
       console.log('nickname change command:' + msg);
       io.emit('chat message', 'nickname change command');
       //todo: ensure nickname is not blank & is not already taken
