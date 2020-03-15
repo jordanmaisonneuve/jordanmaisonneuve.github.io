@@ -16,41 +16,28 @@ app.get('/', function(req, res) {
 io.on('connection', function(socket) {
   console.log('a user connected');
   io.emit('chat message', 'A user connected');
+  console.log('A user connected, Socket ' + socket.id);
   //restore chat log when user connects/reconnects
   chatLog.forEach((item, i) => {
     io.emit('chat message', item);
   });
 
-  //dealing with username stuff
-  var usrName = 'user0'; //initial user name
-  if (firstConnection){
-    var usrNameMsg = 'Your username is: ' + usrName;
-    io.emit('update top display', usrName);
-    console.log(usrNameMsg);
-    io.emit('chat message', usrNameMsg);
-    userArray.push(usrName);
-    io.emit('user list update', userArray);
-    firstConnection = false;
+  //Create user object with socket id, name, and color
+  let newUser = {
+    socketId: socket.id,
+    username: 'anon',
+    nickcolor: Math.floor(100000 + Math.random() * 900000)
+  };
 
-  } else {
-    userArray.forEach((item, i) => {
-
-      if (usrName === item) { //condition to determine if username is unique.
-        var randNames = ['anon', 'bigdaddy', 'soup', 'killerwhale', 'zack', '42069'];
-
-        usrName = randNames[i];
-        var usrNameMsg = 'Your username is: ' + usrName;
-        io.emit('update top display', usrName);
-        console.log(usrNameMsg);
-        userArray.push(usrName);
-
-        io.emit('chat message', usrNameMsg);
-        io.emit('user list update', usrName);
-      }
-    });
+  //ensure unique username before pushing to usrArr
+  for (var i = 0; i < userArray.length; i++){
+    if (userArray[i].username === newUser.username){
+      newUser.username = 'anon' + i;
+    }
   }
+  userArray.push(newUser);
+  console.table(userArray);
 
-  //end username stuff
 
   socket.on('chat message', function(msg) { //function that is run when chat form is submitted.
 
@@ -67,8 +54,9 @@ io.on('connection', function(socket) {
 
     var chatMsg = {
       timestamp: datevalues[3] + ':' + datevalues[4] + ':' + datevalues[5],
-      username: 'aaa',
-      message: msg
+      username: 'aaa', //TODO: get username from socketid  -- getUsername(socket);
+      message: msg,
+      sender: socket.id
     };
 
     //put the chat message in the console, screen, and memory backup.
@@ -85,7 +73,7 @@ io.on('connection', function(socket) {
       var newNickName = msg.slice(6);
       console.log('new nickname is:' + newNickName);
       io.emit('chat message', 'Your new nickname is: ' + newNickName);
-      userArray.push(newNickName);
+      //userArray.push(newNickName);
       io.emit('user list update', newNickName);
 
       io.emit('update top display', newNickName);
@@ -103,9 +91,15 @@ io.on('connection', function(socket) {
 
   socket.on('disconnect', function() {
     console.log('a user disconnected');
-    io.emit('chat message', 'A user disconnected.')
+    io.emit('chat message', 'A user disconnected. Socket ' + socket.id);
     //find out which user disconnected to remove them from the usr array list.
-    //userArray.pop(userName);
+    for (var i = 0; i < userArray.length; i++){
+      if (userArray[i].socketId === socket.id){
+        userArray.splice(i, 1);
+      }
+    }
+    console.table(userArray);
+
 
   });
 });
