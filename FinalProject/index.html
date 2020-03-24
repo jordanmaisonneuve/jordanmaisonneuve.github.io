@@ -1,0 +1,42 @@
+<!--Jordan Maisonneuve 10153260 - B05 !-->
+
+<!doctype html>
+<html>
+  <head>
+    <title>Connect 4 - Link up!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
+    <style>
+    </style>
+  </head>
+  <body>
+    <div class="grid-container">
+      <p class="userNameDisp" id="userNameDisplay">HI</p>
+      <ul class="msgBox" id="messages"></ul>
+      <ul class="userList" id="userLst"></ul>
+      <form action="">
+        <input id="m" autocomplete="off" /><button>Send</button>
+      </form>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+
+    <script> //this is my client script -- put in its own file?
+      $(function () {
+        var socket = io();
+        $('form').submit(function(e){
+          e.preventDefault(); // prevents page reloading
+          socket.emit('chat message', $('#m').val());
+          $('#m').val('');
+          return false;
+        });
+
+        socket.on('chat message', function(msg){
+          $('#messages').append($('<li>').text(msg));
+          //var element = document.getElementById('messages');
+          //element.scrollTop = objDiv.scrollHeight;
+        });
+      });
+    </script>
+  </body>
+</html>
