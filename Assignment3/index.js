@@ -54,7 +54,7 @@ io.on('connection', function(socket) {
 
     var chatMsg = {
       timestamp: datevalues[3] + ':' + datevalues[4] + ':' + datevalues[5],
-      username: 'aaa', //TODO: get username from socketid  -- getUsername(socket);
+      username: getUsername(socket), //TODO: get username from socketid  -- getUsername(socket);
       message: msg,
       sender: socket.id
     };
@@ -112,3 +112,12 @@ io.emit('some event', {
 http.listen(3000, function() {
   console.log('listening on *:3000');
 });
+
+function getUsername(Socket socket){ //tbd not sure how to use that as parameter
+  var userName = "";
+  for (var i = 0; i < userArray.length; i++){
+    if (userArray[i].socketId === socket.Id){
+        return userName;
+    }
+  }
+}
