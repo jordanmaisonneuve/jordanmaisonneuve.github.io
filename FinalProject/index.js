@@ -16,3 +16,13 @@ io.on('connection', function(socket){
 http.listen(3000, function(){
   console.log('listening on *:3000');
 });
+
+//this will be the main game logic
+io.on('user move', function (){
+
+});
+
+io.on('create with code', function(){
+
+
+});
