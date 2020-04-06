@@ -6,6 +6,9 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
 var userArray = new Array();
+var gameCodesArray = new Array();
+var randomGameQueue = new Array();
+
 
 app.use(express.static(__dirname + '/node_modules'));
 app.get('/', function(req, res,next) {
@@ -19,7 +22,8 @@ io.on('connection', function(socket){
     socketId: socket.id,
     username: 'anon123',
     nickcolor: 'FFFFFF',
-    isInGame: false //tbd
+    isInGame: false, //tbd
+    gameCode: generateGameCode()
   }
 
   for (var i = 0; i < userArray.length; i++){
@@ -28,10 +32,13 @@ io.on('connection', function(socket){
     }
   }
 
+
+  //emit the game code to the client...
+  io.emit('update game code', newUser.gameCode);
+  io.emit('update username', newUser.username);
   userArray.push(newUser);
   console.table(userArray);
 
-  //this will be the main game logic
   socket.on('user move', function (){
     console.log('user move detected from socket: ' + socket.id);
     //going to need to send information to update the display for the connected users
@@ -51,7 +58,7 @@ io.on('connection', function(socket){
         userArray.splice(i, 1);
       }
     }
-    console.table(userArray);
+    console.table(userArray); //print the user array after the disconnect
   });
 });
 
@@ -66,3 +73,26 @@ io.on('create with code', function(){
 
 
 });
+
+//creates a random unique 6 digit code for a game to be joined
+function generateGameCode(){
+  var code = Math.floor(100000 + Math.random() * 900000);
+  for (var i = 0; i < gameCodesArray.length; i++){
+    if (gameCodesArray[i] === code){
+      //if code already exists, create a new one
+      code = Math.floor(100000 + Math.random() * 900000);
+    }
+  }
+  gameCodesArray.push(code); //mgoing to need to pop off when game is made.
+  console.table(gameCodesArray);
+  return code;
+}
+
+//gets username from socket id
+function getUsername(socket){
+    for (var i = 0; i < userArray.length; i++){
+      if (userArray[i].socketId === socket.id){
+        return userArray[i].userName;
+      }
+    }
+}

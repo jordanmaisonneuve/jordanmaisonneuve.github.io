@@ -10,7 +10,7 @@
   <style>
     body {
       margin: 0;
-      overflow: hidden;
+      /*overflow: hidden;*/
     }
 
     canvas {
@@ -20,6 +20,20 @@
 </head>
 
 <body>
+  <div class="grid-container">
+      <form action="">
+        <button>Join Random Game</button>
+        <button>Join Game with Code</button><input id="joinWithCode" autocomplete="off"/>
+        <br>
+        <button>Classic</button>
+        <button>Dark</button>
+        <button>CreamScreen</button>
+        <p id="userNameDisplay">Your username is</p><input id="enterNewUsername">Enter new username</input>
+        <p id="gameCode">Your game code is .</p>
+      </form>
+
+
+  </div>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/jquery/dist/jquery.js"></script>
   <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
@@ -28,6 +42,19 @@
   <script>
     $(function() {
       "use strict";
+
+      var socket = io(); //socket -- id
+      socket.on('update game code', function(gameCode){
+        //update the input box with the gameCode
+        $('#gameCode').text('Your gamecode is ' + gameCode);
+      });
+
+      socket.on('update username', function(username){
+        $('#userNameDisplay').text('Your username is ' + username);
+      });
+
+
+      //CONECT 4 GAME
       // game parameters
 
       const GRID_CIRCLE = 0.7; // circle size as a fraction of cell size
@@ -113,7 +140,6 @@
 
       // game variables
       var gameOver, gameTied, grid = [], player1Turn;
-      var socket = io(); //socket -- id
 
       // dimensions
       var height, width, margin;
