@@ -1,3 +1,6 @@
+socket io Link
+https://www.scaleway.com/en/docs/how-to-install-and-configure-socket-io/
+
 Connect 4 TODO list:
 
 
@@ -6,7 +9,7 @@ Game Logic:(on the event of a user move)
 -update board with new move
 -check for winner
 -if no winner - give turn to next player with updated board.
--if winner - end game and give it 
+-if winner - end game and give it
 
 
 -Create board object - 7*6 array, isFilled, player# for each space.

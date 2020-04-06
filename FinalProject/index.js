@@ -1,28 +1,34 @@
 //Jordan Maisonneuve 10153260 - B05
 
-var app = require('express')();
-var http = require('http').createServer(app);
-var io = require('socket.io')(http);
+var express = require('express');
+var app = express();
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
 
-
-app.get('/', function(req, res) {
-  res.sendFile(__dirname + '/index.html');
+app.use(express.static(__dirname + '/node_modules'));
+app.get('/', function(req, res,next) {
+    res.sendFile(__dirname + '/index.html');
 });
 
 io.on('connection', function(socket){
   console.log('a user connected');
 });
 
-http.listen(3000, function(){
+server.listen(3000, function(){
   console.log('listening on *:3000');
 });
 
 //this will be the main game logic
 io.on('user move', function (){
-
+  console.log('user move detected from');
 });
 
 io.on('create with code', function(){
 
+
+});
+
+io.on('new game', function(){
+  console.log('a new game has begun!');
 
 });

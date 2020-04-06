@@ -4,6 +4,14 @@
   "description": "wicked awesome",
   "dependencies": {
     "express": "^4.15.2",
+    "jquery": "^3.4.1",
     "socket.io": "^2.3.0"
-  }
+  },
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "node index.js"
+  },
+  "author": "jordan",
+  "license": "ISC"
 }
