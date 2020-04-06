@@ -2,15 +2,10 @@ socket io Link
 https://www.scaleway.com/en/docs/how-to-install-and-configure-socket-io/
 
 Connect 4 TODO list:
+client:
+-get client script to link in external file
 
+socket stuff:
 
-Game Logic:(on the event of a user move)
--determine if move is valid
--update board with new move
--check for winner
--if no winner - give turn to next player with updated board.
--if winner - end game and give it
-
-
--Create board object - 7*6 array, isFilled, player# for each space.
--Create game object - owns board and two players, has its own id
+-when a user moves update the display for both users
+-create a game on the server that requires 2 unique socket ids
