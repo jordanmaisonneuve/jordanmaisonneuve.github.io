@@ -16,6 +16,8 @@ app.get('/', function(req, res,next) {
 });
 
 io.on('connection', function(socket){
+  //TODO determine if user has been here before...
+
   console.log('a user connected socket: ' + socket.id);
 
   let newUser = {
@@ -32,8 +34,7 @@ io.on('connection', function(socket){
     }
   }
 
-
-  //emit the game code to the client...
+  //emit the game code to the client... - directly!
   io.emit('update game code', newUser.gameCode);
   io.emit('update username', newUser.username);
   userArray.push(newUser);
@@ -49,13 +50,34 @@ io.on('connection', function(socket){
     console.log('a new game has begun');
   });
 
+  socket.on('create with code', function(){
+    console.log('create with code received');
+
+  });
+
+  socket.on('join random game', function (socket){
+    randomGameQueue.push(socket);
+    console.log('join random game received');
+    while(true){
+      if (randomGameQueue.length > 1){
+        io.emit('start random game', randomGameQueue[0], randomGameQueue[1]);
+        randomGameQueue = [];
+      }
+      sleep(5000); //sleep 5 seconds before checking again.
+    }
+  });
+
   //remove a user when they disconnect
   socket.on('disconnect', function() {
     console.log('A user disconnected. Socket ' + socket.id);
     //find out which user disconnected to remove them from the usr array list.
     for (var i = 0; i < userArray.length; i++){
       if (userArray[i].socketId === socket.id){
+        var codeIndex = gameCodesArray.indexOf(userArray[i].gameCode);
+        if (codeIndex !== -1) gameCodesArray.splice(codeIndex, 1);
+
         userArray.splice(i, 1);
+
       }
     }
     console.table(userArray); //print the user array after the disconnect
@@ -67,12 +89,7 @@ server.listen(3000, function(){
   console.log('listening on *:3000');
 });
 
-
-
-io.on('create with code', function(){
-
-
-});
+//helper functions
 
 //creates a random unique 6 digit code for a game to be joined
 function generateGameCode(){

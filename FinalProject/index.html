@@ -22,8 +22,8 @@
 <body>
   <div class="grid-container">
       <form action="">
-        <button>Join Random Game</button>
-        <button>Join Game with Code</button><input id="joinWithCode" autocomplete="off"/>
+        <button id="randButton">Join Random Game</button>
+        <button id="codeButton">Join Game with Code</button><input id="joinWithCode" autocomplete="off"/>
         <br>
         <button>Classic</button>
         <button>Dark</button>
@@ -51,6 +51,14 @@
 
       socket.on('update username', function(username){
         $('#userNameDisplay').text('Your username is ' + username);
+      });
+
+      socket.on('start random game', function(socket1, socket2){
+        //initialize game with the two players
+      });
+
+      socket.on('start game with code', function(socket1, socket2){
+        //initialize game with the two players
       });
 
 
@@ -133,7 +141,18 @@
         }
       }
 
-      // set up the canvas and context
+      class Player {
+        constructor(id, uname, colorscheme, isInGame, gameCode){
+          this.id = id;
+          this.uname = uname;
+          this.colorscheme = colorscheme;
+          this.isInGame = isInGame;
+          this.gameCode = gameCode;
+          this.cells = new Array(Cell);
+        }
+
+      }
+      // set up the canvas and context -- i should set this up once the game has beeen started.
       var canv = document.createElement("canvas");
       document.body.appendChild(canv);
       var ctx = canv.getContext("2d");
@@ -149,6 +168,10 @@
       canv.addEventListener("click", click);
       canv.addEventListener("mousemove", highlightGrid);
       window.addEventListener("resize", setDimensions);
+
+      //TODO add event listeners to buttons
+      document.getElementById("randButton").addEventListener("click", joinRandomGame);
+      document.getElementById("codeButton").addEventListener("click", joinWithCode);
 
       // game loop
       requestAnimationFrame(loop);
@@ -235,9 +258,11 @@
         return false;
       }
 
+      //TODO probably change this so the flow is different
       function click(ev) {
 
         if (gameOver) {
+          //to be removed?
           newGame();
           return;
         }
@@ -368,6 +393,7 @@
         highlightCell(ev.clientX, ev.clientY);
       }
 
+      //set up logic so it requires 2 players to begin.
       function newGame() {
 
         socket.emit('new game');
@@ -432,9 +458,22 @@
         canv.height = height;
         canv.width = width;
         margin = MARGIN * Math.min(height, width);
+
+        //to be removed?
         newGame();
 
       }
+
+      function createGameWithCode(code){
+        io.emit('create with code', socket);
+      }
+
+      //send a signal to the server that this player should be added to the queue
+      //to play a game against another player.
+      function joinRandomGame(){
+        io.emit('join random game', socket);
+      }
+
     });
 
     //this is my client script -- put in its own file?
