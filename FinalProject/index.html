@@ -20,20 +20,18 @@
 </head>
 
 <body>
-  <div class="grid-container">
+
       <form action="">
         <button id="randButton">Join Random Game</button>
         <button id="codeButton">Join Game with Code</button><input id="joinWithCode" autocomplete="off"/>
         <br>
-        <button>Classic</button>
-        <button>Dark</button>
-        <button>CreamScreen</button>
+        <button id="themeClassic">Classic</button>
+        <button id="themeDark">Dark</button>
+        <button id="themeCream">CreamScreen</button>
         <p id="userNameDisplay">Your username is</p><input id="enterNewUsername">Enter new username</input>
         <p id="gameCode">Your game code is .</p>
       </form>
 
-
-  </div>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/jquery/dist/jquery.js"></script>
   <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
@@ -61,6 +59,16 @@
         //initialize game with the two players
       });
 
+      function createGameWithCode(code){
+        io.emit('create with code', socket);
+      }
+
+      //send a signal to the server that this player should be added to the queue
+      //to play a game against another player.
+      function joinRandomGame(){
+        io.emit('join random game', socket);
+      }
+
 
       //CONECT 4 GAME
       // game parameters
@@ -70,7 +78,7 @@
       const GRID_ROWS = 6; // number of game rows
       const MARGIN = 0.02; // margin as a fraction of the shortest screen dimension
 
-      // colours
+      // colours -- Classic
       const COLOR_BACKGROUND = "lightyellow";
       const COLOR_FRAME = "#2641c9";
       const COLOR_FRAME_BUTT = "royalblue";
@@ -83,6 +91,36 @@
       const COLOR_TIE = "darkgrey";
       const COLOR_TIE_DRK = "black";
       const COLOR_WIN = "black";
+
+      // colours -- Dark
+      const COLOR_BACKGROUND_DARK = "darkgrey";
+      const COLOR_FRAME_DARK = "lightgrey";
+      const COLOR_FRAME_BUTT_DARK = "grey";
+
+      const COLOR_PLAY1_DARK = "lightpurple";
+      const COLOR_PLAY1_DRK_DARK = "purple";
+      const COLOR_PLAY2_DARK = "lightgreen";
+      const COLOR_PLAY2_DRK_DARK = "green";
+
+      const COLOR_TIE_DARK = "darkgrey";
+      const COLOR_TIE_DRK_DARK = "black";
+      const COLOR_WIN_DARK = "black";
+
+      // colours -- CreamScreen
+      const COLOR_BACKGROUND_CRMSCRN = "pink";
+      const COLOR_FRAME_CRMSCRN = "lightpink";
+      const COLOR_FRAME_BUTT_CRMSCRN = "darkpink";
+
+      const COLOR_PLAY1_CRMSCRN = "yellow";
+      const COLOR_PLAY1_DRK_CRMSCRN = "olive";
+      const COLOR_PLAY2_CRMSCRN = "red";
+      const COLOR_PLAY2_DRK_CRMSCRN = "darkred";
+
+      const COLOR_TIE_CRMSCRN = "darkgrey";
+      const COLOR_TIE_DRK_CRMSCRN = "black";
+      const COLOR_WIN_CRMSCRN = "black";
+
+      //END colors
 
       // text
       const TEXT_PLAY1 = "Player 1";
@@ -173,7 +211,10 @@
       document.getElementById("randButton").addEventListener("click", joinRandomGame);
       document.getElementById("codeButton").addEventListener("click", joinWithCode);
 
-      // game loop
+      document.getElementById("themeClassic").addEventListener("click", changeTheme);
+      document.getElementById("themeDark").addEventListener("click", changeTheme);
+      document.getElementById("themeCream").addEventListener("click", changeTheme);
+      // game loop for a game
       requestAnimationFrame(loop);
 
       function loop() {
@@ -464,15 +505,11 @@
 
       }
 
-      function createGameWithCode(code){
-        io.emit('create with code', socket);
+      function changeTheme(theme){
+
       }
 
-      //send a signal to the server that this player should be added to the queue
-      //to play a game against another player.
-      function joinRandomGame(){
-        io.emit('join random game', socket);
-      }
+
 
     });
 
