@@ -1,8 +1,6 @@
-<!--Jordan Maisonneuve 10153260 - B05 !-->
-
 <!doctype html>
 <html>
-
+<!--Jordan Maisonneuve 10153260 - B05 !-->
 <head>
   <title>Connect 4 - Link up!</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -21,16 +19,18 @@
 
 <body>
 
-      <form action="">
-        <button id="randButton">Join Random Game</button>
-        <button id="codeButton">Join Game with Code</button><input id="joinWithCode" autocomplete="off"/>
-        <br>
-        <button id="themeClassic">Classic</button>
-        <button id="themeDark">Dark</button>
-        <button id="themeCream">CreamScreen</button>
-        <p id="userNameDisplay">Your username is</p><input id="enterNewUsername">Enter new username</input>
-        <p id="gameCode">Your game code is .</p>
-      </form>
+
+      <button id="randButton">Join Random Game</button>
+      <button id="codeButton">Join Game with Code</button><input id="joinWithCode" autocomplete="off"/>
+      <br>
+      <button id="themeClassic">Classic</button>
+      <button id="themeDark">Dark</button>
+      <button id="themeCream">CreamScreen</button>
+      <p id="userNameDisplay">Your username is</p>
+      <input id="enterNewUsername">Enter new username</input>
+      <button id="enterNewUsernameButton">Submit</button>
+      <p id="gameCode">Your game code is .</p>
+
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/jquery/dist/jquery.js"></script>
@@ -67,6 +67,12 @@
       //to play a game against another player.
       function joinRandomGame(){
         io.emit('join random game', socket);
+      }
+
+      function submitUsername(){
+
+        console.log('username button pressed.');
+        socket.emit('update username');
       }
 
 
@@ -207,7 +213,17 @@
       canv.addEventListener("mousemove", highlightGrid);
       window.addEventListener("resize", setDimensions);
 
-      //TODO add event listeners to buttons
+      var unameButton = document.createElement("button");
+      unameButton.setAttribute('content', 'submit');
+      unameButton.setAttribute('class', 'btn');
+      unameButton.innerHTML = 'submit';
+
+      document.body.appendChild(unameButton);
+
+      unameButton.addEventListener("click", submitUsername);
+
+      // event listeners to buttons
+      document.getElementById("enterNewUsernameButton").addEventListener("click", submitUsername);
       document.getElementById("randButton").addEventListener("click", joinRandomGame);
       document.getElementById("codeButton").addEventListener("click", joinWithCode);
 

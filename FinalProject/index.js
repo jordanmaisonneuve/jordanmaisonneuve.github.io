@@ -40,6 +40,16 @@ io.on('connection', function(socket){
   userArray.push(newUser);
   console.table(userArray);
 
+
+  socket.on('update username', function(uname){
+    console.log('update username command received from socket ' + socket.id);
+    for (var i = 0; i < userArray.length; i++){
+      if (userArray[i].socketId === socket.id){
+        userArray[i].username = uname; //update users username
+      }
+    }
+  });
+
   socket.on('user move', function (){
     console.log('user move detected from socket: ' + socket.id);
     //going to need to send information to update the display for the connected users
