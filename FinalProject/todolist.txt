@@ -11,7 +11,7 @@ client:
 
 
 server:
--generate random usernames that arent anon123
+-generate random usernames that aren't anon123
 
 
 socket stuff:

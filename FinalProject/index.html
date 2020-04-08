@@ -71,8 +71,8 @@
         $('#gameCode').text('Your gamecode is ' + gameCode);
       });
 
-      socket.on('update username text', function(username){
-        $('#userNameDisplay').text(username);
+      socket.on('update username text', function(dispText){
+        $('#userNameDisplay').text(dispText);
       });
 
       socket.on('start random game', function(socket1, socket2){
@@ -108,7 +108,7 @@
       const MARGIN = 0.02; // margin as a fraction of the shortest screen dimension
 
       // colours -- Classic
-      const COLOR_BACKGROUND = "lightyellow";
+      const COLOR_BACKGROUND = "white";
       const COLOR_FRAME = "#2641c9";
       const COLOR_FRAME_BUTT = "royalblue";
 
@@ -220,7 +220,11 @@
       }
       // set up the canvas and context -- i should set this up once the game has beeen started.
       var canv = document.createElement("canvas");
+
+      //do this when the game begins...
       document.body.appendChild(canv);
+      //...
+
       var ctx = canv.getContext("2d");
 
       // game variables
@@ -533,7 +537,7 @@
         margin = MARGIN * Math.min(height, width);
 
         //to be removed?
-        newGame();
+        //newGame();
 
       }
 
