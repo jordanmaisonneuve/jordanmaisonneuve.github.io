@@ -22,27 +22,28 @@ io.on('connection', function(socket){
 
   let newUser = {
     socketId: socket.id,
-    username: 'anon123',
+    username: getNickName(),
     isInGame: false, //tbd
     gameCode: generateGameCode()
   }
 
+  //assign new unique username.
   for (var i = 0; i < userArray.length; i++){
     if (userArray[i].username === newUser.username){
-      newUser.username = 'anon123-' + i;
+      newUser.username = getNickName();
     }
   }
 
   //emit the game code to the client
   socket.emit('update game code', newUser.gameCode);
-  socket.emit('update username text', 'Your username is ' + newUser.username);
+  socket.emit('update username display', 'Your username is ' + newUser.username);
   userArray.push(newUser); //add user to the connected users array.
   console.table(userArray);
 
 
   socket.on('update username', function(uname){
     if (uname === ""){
-      socket.emit('update username text', 'Invalid username entered');
+      socket.emit('update username display', 'Invalid username entered');
       return;
     }
     var oldName = "";
@@ -53,7 +54,7 @@ io.on('connection', function(socket){
           return;
         }
         userArray[i].username = uname; //update users username
-        socket.emit('update username text', 'Your username is ' + userArray[i].username); //update the client
+        socket.emit('update username display', 'Your username is ' + userArray[i].username); //update the client
       }
     }
     console.log('username for socket ' + socket.id + ' updated from ' + oldName + ' to ' + uname);
@@ -75,21 +76,27 @@ io.on('connection', function(socket){
 
   });
 
-  socket.on('join random game', function (socket){
-    randomGameQueue.push(socket);
-    console.log('join random game received');
-    while(true){
-      if (randomGameQueue.length > 1){
-        io.emit('start random game', randomGameQueue[0], randomGameQueue[1]);
-        randomGameQueue = [];
+  socket.on('join random game', function (){
+    console.log('join random game received...\nchecking queue for players');
+    for (var i = 0; i < randomGameQueue.length; i++){
+      if (randomGameQueue[i] === socket.id){
+        console.log('You are already in the queue, please wait.');
+        //todo tell the client too.
+        return;
       }
-      sleep(5000); //sleep 5 seconds before checking again.
+    }
+    randomGameQueue.push(socket.id);
+    console.table(randomGameQueue);
+    if (randomGameQueue.length > 1){
+      //todo, need to give this to the two socket ids that are in the queue.
+      socket.emit('start random game', randomGameQueue[0], randomGameQueue[1]);
+      randomGameQueue = [];
     }
   });
 
   //remove a user when they disconnect
   socket.on('disconnect', function() {
-    console.log('A user disconnected. Socket ' + socket.id);
+    console.log(getUsername(socket) + ' has disconnected.');
     //find out which user disconnected to remove them from the usr array list.
     for (var i = 0; i < userArray.length; i++){
       if (userArray[i].socketId === socket.id){
@@ -98,7 +105,6 @@ io.on('connection', function(socket){
         userArray.splice(i, 1);
       }
     }
-    console.table(userArray); //print the user array after the disconnect
   });
 });
 
@@ -129,4 +135,77 @@ function getUsername(socket){
         return userArray[i].username;
       }
     }
+}
+
+function sleep(milliseconds) {
+  const date = Date.now();
+  let currentDate = null;
+  do {
+    currentDate = Date.now();
+  } while (currentDate - date < milliseconds);
+}
+
+function getNickName(){
+  var nickNames = [
+    "Boo",
+    "Fox",
+    "Tyke",
+    "Twix",
+    "Donut",
+    "Biffle",
+    "Giggles",
+    "Righty",
+    "Fly",
+    "Bacon",
+    "Lil Girl",
+    "Goblin",
+    "Duckling",
+    "Lulu",
+    "Frodo",
+    "Flyby",
+    "Sweet Tea",
+    "Beauty",
+    "Chip",
+    "Shuttershy",
+    "Rosebud",
+    "Sunny",
+    "Colonel",
+    "Snake",
+    "Monkey",
+    "Tarzan",
+    "Pyscho",
+    "Snickerdoodle",
+    "Doc",
+    "C-Dawg",
+    "Freckles",
+    "Joker",
+    "Dork",
+    "Grumpy",
+    "Sweety",
+    "T-Dawg",
+    "Baldie",
+    "Guapo",
+    "Baby Bird",
+    "Moose",
+    "Chiquita",
+    "Terminator",
+    "Baby Cakes",
+    "Peppermint",
+    "Double Bubble",
+    "Bud",
+    "Beef",
+    "French Fry",
+    "Janitor",
+    "Piglet",
+    "Boomhauer",
+    "Jet",
+    "Gizmo",
+    "Nerd",
+    "Gummi Bear",
+    "Bridge",
+    "Lovely"
+ ];
+
+ return nickNames[Math.floor(Math.random() * (nickNames.length + 1) )];
+
 }

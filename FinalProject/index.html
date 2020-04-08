@@ -36,7 +36,18 @@
     }
 
     p {
+      font-family: Arial;
+      font-size: 1.2rem;
+    }
 
+    input {
+      font-family: Arial;
+      font-size: 1.2rem;
+    }
+
+    .enterNewUsername {
+      float: top;
+      font-size: 40px;
     }
   </style>
 </head>
@@ -51,7 +62,7 @@
       <button id="themeDark">Dark</button>
       <button id="themeCream">CreamScreen</button>
       <p id="userNameDisplay">Your username is</p>
-      <input id="enterNewUsername">Enter new username</input>
+      <input type="text" id="enterNewUsername">Enter new username</input>
       <button id="enterNewUsernameButton">Submit</button>
       <p id="gameCode">Your game code is .</p>
 </div>
@@ -71,7 +82,7 @@
         $('#gameCode').text('Your gamecode is ' + gameCode);
       });
 
-      socket.on('update username text', function(dispText){
+      socket.on('update username display', function(dispText){
         $('#userNameDisplay').text(dispText);
       });
 
@@ -83,19 +94,19 @@
         //initialize game with the two players
       });
 
-      function createGameWithCode(code){
-        io.emit('create with code', socket);
+      function createGameWithCode(){
+        console.log('create game with code button clicked');
+        socket.emit('create with code');
       }
 
-      //send a signal to the server that this player should be added to the queue
-      //to play a game against another player.
       function joinRandomGame(){
-        io.emit('join random game', socket);
+        socket.emit('join random game');
       }
 
       function submitUsername(){
         var unameText = document.getElementById("enterNewUsername").value;
         socket.emit('update username', document.getElementById("enterNewUsername").value);
+        document.getElementById("enterNewUsername").value = '';
       }
 
 
@@ -108,7 +119,7 @@
       const MARGIN = 0.02; // margin as a fraction of the shortest screen dimension
 
       // colours -- Classic
-      const COLOR_BACKGROUND = "white";
+      const COLOR_BACKGROUND = "lightyellow";
       const COLOR_FRAME = "#2641c9";
       const COLOR_FRAME_BUTT = "royalblue";
 
@@ -220,11 +231,7 @@
       }
       // set up the canvas and context -- i should set this up once the game has beeen started.
       var canv = document.createElement("canvas");
-
-      //do this when the game begins...
       document.body.appendChild(canv);
-      //...
-
       var ctx = canv.getContext("2d");
 
       // game variables
@@ -239,12 +246,10 @@
       canv.addEventListener("mousemove", highlightGrid);
       window.addEventListener("resize", setDimensions);
 
-
-
       // event listeners to buttons
       document.getElementById("enterNewUsernameButton").addEventListener("click", submitUsername);
       document.getElementById("randButton").addEventListener("click", joinRandomGame);
-      document.getElementById("codeButton").addEventListener("click", joinWithCode);
+      document.getElementById("codeButton").addEventListener("click", createGameWithCode);
 
 
       document.getElementById("themeClassic").addEventListener("click", changeTheme);
@@ -345,7 +350,6 @@
         }
 
         //select the cell based on what was clicked.
-        socket.emit('user move');
         selectCell();
       }
 
@@ -526,7 +530,7 @@
         if (!gameOver) {
           player1Turn = !player1Turn;
         }
-        socket.emit('user move', socket);
+        socket.emit('user move');
       }
 
       function setDimensions() {
@@ -537,7 +541,7 @@
         margin = MARGIN * Math.min(height, width);
 
         //to be removed?
-        //newGame();
+        newGame();
 
       }
 
