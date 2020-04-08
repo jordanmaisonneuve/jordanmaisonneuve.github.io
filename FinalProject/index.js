@@ -9,6 +9,8 @@ var userArray = new Array();
 var gameCodesArray = new Array();
 var randomGameQueue = new Array();
 
+//to store where the games are and which players are in which game with which code.
+var activeGamesList = new Array();
 
 app.use(express.static(__dirname + '/node_modules'));
 app.get('/', function(req, res,next) {
@@ -62,7 +64,7 @@ io.on('connection', function(socket){
   });
 
   socket.on('user move', function (){
-    console.log('user move detected from user: ' + getUsername(socket));
+    console.log('user move detected from: ' + getUsername(socket));
     //going to need to send information to update the display for the connected users
   });
 
@@ -71,8 +73,16 @@ io.on('connection', function(socket){
     console.log('a new game has begun');
   });
 
-  socket.on('create with code', function(){
-    console.log('create with code received');
+  socket.on('create with code', function(gameCode){
+    console.log('create with code received from ' + getUsername(socket));
+    console.log('game code received: ' + gameCode);
+
+    for (var i = 0; i < userArray.length; i++){
+      if (userArray[i].gameCode === gameCode){
+        //todo: start a new game with these two users...
+
+      }
+    }
 
   });
 
@@ -89,7 +99,7 @@ io.on('connection', function(socket){
     console.table(randomGameQueue);
     if (randomGameQueue.length > 1){
       //todo, need to give this to the two socket ids that are in the queue.
-      socket.emit('start random game', randomGameQueue[0], randomGameQueue[1]);
+      //socket.emit('start random game', randomGameQueue[0], randomGameQueue[1]);
       randomGameQueue = [];
     }
   });

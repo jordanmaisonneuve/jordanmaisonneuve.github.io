@@ -95,8 +95,8 @@
       });
 
       function createGameWithCode(){
-        console.log('create game with code button clicked');
-        socket.emit('create with code');
+        console.log('gamecode button pressed');
+        socket.emit('create with code', document.getElementById("joinWithCode").value);
       }
 
       function joinRandomGame(){
@@ -251,10 +251,10 @@
       document.getElementById("randButton").addEventListener("click", joinRandomGame);
       document.getElementById("codeButton").addEventListener("click", createGameWithCode);
 
-
       document.getElementById("themeClassic").addEventListener("click", changeTheme);
       document.getElementById("themeDark").addEventListener("click", changeTheme);
       document.getElementById("themeCream").addEventListener("click", changeTheme);
+
       // game loop for a game
       requestAnimationFrame(loop);
 
