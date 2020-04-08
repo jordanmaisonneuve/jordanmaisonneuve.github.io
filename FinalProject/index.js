@@ -23,7 +23,6 @@ io.on('connection', function(socket){
   let newUser = {
     socketId: socket.id,
     username: 'anon123',
-    nickcolor: 'FFFFFF',
     isInGame: false, //tbd
     gameCode: generateGameCode()
   }
@@ -36,24 +35,33 @@ io.on('connection', function(socket){
 
   //emit the game code to the client
   socket.emit('update game code', newUser.gameCode);
-  socket.emit('update username', newUser.username);
+  socket.emit('update username text', 'Your username is ' + newUser.username);
   userArray.push(newUser); //add user to the connected users array.
   console.table(userArray);
 
 
   socket.on('update username', function(uname){
+    if (uname === ""){
+      socket.emit('update username text', 'Invalid username entered');
+      return;
+    }
+    var oldName = "";
     for (var i = 0; i < userArray.length; i++){
       if (userArray[i].socketId === socket.id){
+        oldName = userArray[i].username;
+        if (oldName === uname){
+          return;
+        }
         userArray[i].username = uname; //update users username
-        socket.emit('update username', userArray[i].username); //update the client
+        socket.emit('update username text', 'Your username is ' + userArray[i].username); //update the client
       }
     }
-    console.log('username for socket ' + socket.id + ' updated to ' + uname);
+    console.log('username for socket ' + socket.id + ' updated from ' + oldName + ' to ' + uname);
     console.table(userArray);
   });
 
   socket.on('user move', function (){
-    console.log('user move detected from socket: ' + socket.id);
+    console.log('user move detected from user: ' + getUsername(socket));
     //going to need to send information to update the display for the connected users
   });
 
@@ -87,9 +95,7 @@ io.on('connection', function(socket){
       if (userArray[i].socketId === socket.id){
         var codeIndex = gameCodesArray.indexOf(userArray[i].gameCode);
         if (codeIndex !== -1) gameCodesArray.splice(codeIndex, 1);
-
         userArray.splice(i, 1);
-
       }
     }
     console.table(userArray); //print the user array after the disconnect
@@ -113,7 +119,6 @@ function generateGameCode(){
     }
   }
   gameCodesArray.push(code); //mgoing to need to pop off when game is made.
-  console.table(gameCodesArray);
   return code;
 }
 
@@ -121,7 +126,7 @@ function generateGameCode(){
 function getUsername(socket){
     for (var i = 0; i < userArray.length; i++){
       if (userArray[i].socketId === socket.id){
-        return userArray[i].userName;
+        return userArray[i].username;
       }
     }
 }

@@ -14,15 +14,39 @@
     canvas {
       display: block;
     }
+
+    .displayGrid {
+      display: grid;
+      grid-column-gap: 5px;
+      grid-row-gap: 5px;
+      grid-template-columns: 33% 33% 33%;
+      grid-template-rows: 25% 25% ;
+    }
+
+    button {
+      background-color: #337eb0;
+      border: none;
+      color: white;
+      margin: 1% 1% 1% 1%;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+    }
+
+    p {
+
+    }
   </style>
 </head>
 
 <body>
 
-
+<div class="displayGrid">
       <button id="randButton">Join Random Game</button>
-      <button id="codeButton">Join Game with Code</button><input id="joinWithCode" autocomplete="off"/>
-      <br>
+      <button id="codeButton">Join Game with Code</button>
+      <input id="joinWithCode" autocomplete="off"/>
       <button id="themeClassic">Classic</button>
       <button id="themeDark">Dark</button>
       <button id="themeCream">CreamScreen</button>
@@ -30,7 +54,7 @@
       <input id="enterNewUsername">Enter new username</input>
       <button id="enterNewUsernameButton">Submit</button>
       <p id="gameCode">Your game code is .</p>
-
+</div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/jquery/dist/jquery.js"></script>
@@ -42,14 +66,13 @@
       "use strict";
 
       var socket = io(); //socket -- id
-      
+
       socket.on('update game code', function(gameCode){
-        //update the input box with the gameCode
         $('#gameCode').text('Your gamecode is ' + gameCode);
       });
 
-      socket.on('update username', function(username){
-        $('#userNameDisplay').text('Your username is ' + username);
+      socket.on('update username text', function(username){
+        $('#userNameDisplay').text(username);
       });
 
       socket.on('start random game', function(socket1, socket2){
