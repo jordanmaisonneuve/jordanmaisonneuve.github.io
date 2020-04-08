@@ -42,6 +42,7 @@
       "use strict";
 
       var socket = io(); //socket -- id
+      
       socket.on('update game code', function(gameCode){
         //update the input box with the gameCode
         $('#gameCode').text('Your gamecode is ' + gameCode);
@@ -70,9 +71,8 @@
       }
 
       function submitUsername(){
-
-        console.log('username button pressed.');
-        socket.emit('update username');
+        var unameText = document.getElementById("enterNewUsername").value;
+        socket.emit('update username', document.getElementById("enterNewUsername").value);
       }
 
 
@@ -125,7 +125,6 @@
       const COLOR_TIE_CRMSCRN = "darkgrey";
       const COLOR_TIE_DRK_CRMSCRN = "black";
       const COLOR_WIN_CRMSCRN = "black";
-
       //END colors
 
       // text
@@ -213,19 +212,13 @@
       canv.addEventListener("mousemove", highlightGrid);
       window.addEventListener("resize", setDimensions);
 
-      var unameButton = document.createElement("button");
-      unameButton.setAttribute('content', 'submit');
-      unameButton.setAttribute('class', 'btn');
-      unameButton.innerHTML = 'submit';
 
-      document.body.appendChild(unameButton);
-
-      unameButton.addEventListener("click", submitUsername);
 
       // event listeners to buttons
       document.getElementById("enterNewUsernameButton").addEventListener("click", submitUsername);
       document.getElementById("randButton").addEventListener("click", joinRandomGame);
       document.getElementById("codeButton").addEventListener("click", joinWithCode);
+
 
       document.getElementById("themeClassic").addEventListener("click", changeTheme);
       document.getElementById("themeDark").addEventListener("click", changeTheme);

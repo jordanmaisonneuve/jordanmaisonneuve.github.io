@@ -1,16 +1,25 @@
-socket io Link
-https://www.scaleway.com/en/docs/how-to-install-and-configure-socket-io/
-
 Connect 4 TODO list:
 client:
 -get client script to link in external file
 -create waiting page for when queueing into a game.
+  -refactor code so that board is drawn once a user enters a game.
+  -only draw initial options first of all.
 -create join random game
--create join with code - give each user a unique code when they logon
+-create join with code
 -create color themes
 -style buttons
--create new username input
+
+
+server:
+-generate random usernames that arent anon123
+
 
 socket stuff:
 -when a user moves update the display for both users
 -create a game on the server that requires 2 unique socket ids
+
+
+
+DONE: :)
+- give each user a unique code when they logon
+-create new username input - change username

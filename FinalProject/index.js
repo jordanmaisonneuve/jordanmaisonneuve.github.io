@@ -16,7 +16,7 @@ app.get('/', function(req, res,next) {
 });
 
 io.on('connection', function(socket){
-  //TODO determine if user has been here before...
+  //TODO determine if user has been here before... cookie?
 
   console.log('a user connected socket: ' + socket.id);
 
@@ -34,20 +34,22 @@ io.on('connection', function(socket){
     }
   }
 
-  //emit the game code to the client... - directly!
-  io.emit('update game code', newUser.gameCode);
-  io.emit('update username', newUser.username);
-  userArray.push(newUser);
+  //emit the game code to the client
+  socket.emit('update game code', newUser.gameCode);
+  socket.emit('update username', newUser.username);
+  userArray.push(newUser); //add user to the connected users array.
   console.table(userArray);
 
 
   socket.on('update username', function(uname){
-    console.log('update username command received from socket ' + socket.id);
     for (var i = 0; i < userArray.length; i++){
       if (userArray[i].socketId === socket.id){
         userArray[i].username = uname; //update users username
+        socket.emit('update username', userArray[i].username); //update the client
       }
     }
+    console.log('username for socket ' + socket.id + ' updated to ' + uname);
+    console.table(userArray);
   });
 
   socket.on('user move', function (){
