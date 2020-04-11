@@ -94,6 +94,14 @@
         document.getElementById("enterNewUsernameButton").style.backgroundColor = COLOR_BUTTON_CLASSIC;
 
         document.body.style.background = COLOR_BACKGROUND;
+
+        //change the colors of the connect 4 board.
+        bgcolor = COLOR_BACKGROUND;
+        drawBackground(bgcolor);
+        frameColor = COLOR_FRAME;
+        bottomColor = COLOR_FRAME_BUTT;
+        drawGrid(frameColor, bottomColor);
+
       }
 
 
@@ -110,6 +118,15 @@
 
         document.body.style.background = COLOR_BACKGROUND_DARK;
 
+        //change the colors of the connect 4 board
+
+        bgcolor = COLOR_BACKGROUND_DARK;
+        drawBackground(bgcolor);
+
+        frameColor = COLOR_FRAME_DARK;
+        bottomColor = COLOR_FRAME_BUTT_DARK;
+        drawGrid(frameColor, bottomColor);
+
       }
       function changeThemeCream(){
         console.log('changeThemeCreeam pressed');
@@ -123,6 +140,12 @@
 
         document.body.style.background = COLOR_BACKGROUND_CRMSCRN; //background of page.
 
+        bgcolor = COLOR_BACKGROUND_CRMSCRN;
+        drawBackground(bgcolor);
+        frameColor = COLOR_FRAME_CRMSCRN;
+        bottomColor = COLOR_FRAME_BUTT_CRMSCRN;
+        drawGrid(frameColor, bottomColor);
+
       }
 
       socket.on('update game code', function(gameCode){
@@ -134,11 +157,11 @@
       });
 
       socket.on('start random game', function(socket1, socket2){
-        //initialize game with the two players
+        //TODO initialize game with the two players
       });
 
       socket.on('start game with code', function(socket1, socket2){
-        //initialize game with the two players
+        //TODO initialize game with the two players
       });
 
       function createGameWithCode(){
@@ -243,8 +266,8 @@
         // draw the circle or hole
         draw( /** @type {CanvasRenderingContext2D} */ ctx) {
 
-          // owner colour
-          let color = this.owner == null ? COLOR_BACKGROUND : this.owner ? COLOR_PLAY1 : COLOR_PLAY2;
+          // owner colour - - going to need to change this?
+          let color = this.owner == null ? bgcolor : this.owner ? COLOR_PLAY1 : COLOR_PLAY2;
 
           // draw the circle
           ctx.fillStyle = color;
@@ -308,10 +331,14 @@
       // game loop for a game
       requestAnimationFrame(loop);
 
+      //temp i hope
+      var bgcolor = COLOR_BACKGROUND;
+      var frameColor = COLOR_FRAME;
+      var bottomColor = COLOR_FRAME_BUTT;
       function loop() {
         // draw
-        drawBackground();
-        drawGrid();
+        drawBackground(bgcolor);
+        drawGrid(frameColor, bottomColor);
         drawText();
         // call the next frame
         requestAnimationFrame(loop);
@@ -434,20 +461,20 @@
         }
       }
 
-      function drawBackground() {
-        ctx.fillStyle = COLOR_BACKGROUND;
+      function drawBackground(color) {
+        ctx.fillStyle = color;
         ctx.fillRect(0, 0, width, height);
       }
 
-      function drawGrid() {
+      function drawGrid(frameColor, bottomColor) {
 
         // frame and butt
         let cell = grid[0][0];
         let fh = cell.h * GRID_ROWS;
         let fw = cell.w * GRID_COLS;
-        ctx.fillStyle = COLOR_FRAME;
+        ctx.fillStyle = frameColor;
         ctx.fillRect(cell.left, cell.top, fw, fh);
-        ctx.fillStyle = COLOR_FRAME_BUTT;
+        ctx.fillStyle = bottomColor;
         ctx.fillRect(cell.left - margin / 2, cell.top + fh - margin / 2, fw + margin, margin);
 
         // cells
@@ -458,6 +485,9 @@
         }
       }
 
+      function changeGridColors(frameColor, bottomColor){
+
+      }
       //for drawing the result text at the end of the game for displaying winner and loser
       function drawText() {
         if (!gameOver) {
@@ -595,9 +625,6 @@
 
       }
 
-      function changeTheme(theme){
-
-      }
 
 
 
