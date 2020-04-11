@@ -217,6 +217,6 @@ function getNickName(){
     "Lovely"
  ];
 
- return nickNames[Math.floor(Math.random() * (nickNames.length + 1) )];
+ return nickNames[Math.floor(Math.random() * nickNames.length )];
 
 }

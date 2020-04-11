@@ -6,12 +6,12 @@ client:
   -only draw initial options first of all.
 -create join random game
 -create join with code
--create color themes - halfway done
-
+-change color of peices with each theme
+-add cookies
 
 
 server:
-
+-move game logic to here?
 
 
 socket stuff:
