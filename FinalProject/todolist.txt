@@ -6,12 +6,12 @@ client:
   -only draw initial options first of all.
 -create join random game
 -create join with code
--create color themes
--style buttons
+-create color themes - halfway done
+
 
 
 server:
--generate random usernames that aren't anon123
+
 
 
 socket stuff:
@@ -23,3 +23,5 @@ socket stuff:
 DONE: :)
 - give each user a unique code when they logon
 -create new username input - change username
+-generate random usernames that aren't anon123
+-style buttons

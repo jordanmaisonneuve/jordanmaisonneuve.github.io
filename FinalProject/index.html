@@ -6,6 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" href="css/styles.css">
   <style>
+
+  html {
+    background-color: lightyellow;
+  }
     body {
       margin: 0;
       /*overflow: hidden;*/
@@ -78,8 +82,51 @@
 
       var socket = io(); //socket -- id
 
+      function changeThemeClassic(){
+        console.log('changeThemeClassic pressed');
+
+        //button colors.
+        document.getElementById("themeClassic").style.backgroundColor = COLOR_BUTTON_CLASSIC;
+        document.getElementById("themeDark").style.backgroundColor = COLOR_BUTTON_CLASSIC;
+        document.getElementById("themeCream").style.backgroundColor = COLOR_BUTTON_CLASSIC;
+        document.getElementById("randButton").style.backgroundColor = COLOR_BUTTON_CLASSIC;
+        document.getElementById("codeButton").style.backgroundColor = COLOR_BUTTON_CLASSIC;
+        document.getElementById("enterNewUsernameButton").style.backgroundColor = COLOR_BUTTON_CLASSIC;
+
+        document.body.style.background = COLOR_BACKGROUND;
+      }
+
+
+      function changeThemeDark(){
+        console.log('changeThemeDark pressed');
+
+        //button colors.
+        document.getElementById("themeClassic").style.backgroundColor = COLOR_BUTTON_DARK;
+        document.getElementById("themeDark").style.backgroundColor = COLOR_BUTTON_DARK;
+        document.getElementById("themeCream").style.backgroundColor = COLOR_BUTTON_DARK;
+        document.getElementById("randButton").style.backgroundColor = COLOR_BUTTON_DARK;
+        document.getElementById("codeButton").style.backgroundColor = COLOR_BUTTON_DARK;
+        document.getElementById("enterNewUsernameButton").style.backgroundColor = COLOR_BUTTON_DARK;
+
+        document.body.style.background = COLOR_BACKGROUND_DARK;
+
+      }
+      function changeThemeCream(){
+        console.log('changeThemeCreeam pressed');
+        //button colors.
+        document.getElementById("themeClassic").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
+        document.getElementById("themeDark").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
+        document.getElementById("themeCream").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
+        document.getElementById("randButton").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
+        document.getElementById("codeButton").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
+        document.getElementById("enterNewUsernameButton").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
+
+        document.body.style.background = COLOR_BACKGROUND_CRMSCRN; //background of page.
+
+      }
+
       socket.on('update game code', function(gameCode){
-        $('#gameCode').text('Your gamecode is ' + gameCode);
+        $('#gameCode').text(gameCode);
       });
 
       socket.on('update username display', function(dispText){
@@ -127,6 +174,7 @@
       const COLOR_PLAY1_DRK = "olive";
       const COLOR_PLAY2 = "red";
       const COLOR_PLAY2_DRK = "darkred";
+      const COLOR_BUTTON_CLASSIC = "#337eb0";
 
       const COLOR_TIE = "darkgrey";
       const COLOR_TIE_DRK = "black";
@@ -141,6 +189,7 @@
       const COLOR_PLAY1_DRK_DARK = "purple";
       const COLOR_PLAY2_DARK = "lightgreen";
       const COLOR_PLAY2_DRK_DARK = "green";
+      const COLOR_BUTTON_DARK = "darkgreen";
 
       const COLOR_TIE_DARK = "darkgrey";
       const COLOR_TIE_DRK_DARK = "black";
@@ -155,6 +204,7 @@
       const COLOR_PLAY1_DRK_CRMSCRN = "olive";
       const COLOR_PLAY2_CRMSCRN = "red";
       const COLOR_PLAY2_DRK_CRMSCRN = "darkred";
+      const COLOR_BUTTON_CRMSCRN = "red";
 
       const COLOR_TIE_CRMSCRN = "darkgrey";
       const COLOR_TIE_DRK_CRMSCRN = "black";
@@ -251,9 +301,9 @@
       document.getElementById("randButton").addEventListener("click", joinRandomGame);
       document.getElementById("codeButton").addEventListener("click", createGameWithCode);
 
-      document.getElementById("themeClassic").addEventListener("click", changeTheme);
-      document.getElementById("themeDark").addEventListener("click", changeTheme);
-      document.getElementById("themeCream").addEventListener("click", changeTheme);
+      document.getElementById("themeClassic").addEventListener("click", changeThemeClassic);
+      document.getElementById("themeDark").addEventListener("click", changeThemeDark);
+      document.getElementById("themeCream").addEventListener("click", changeThemeCream);
 
       // game loop for a game
       requestAnimationFrame(loop);

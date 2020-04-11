@@ -37,7 +37,8 @@ io.on('connection', function(socket){
   }
 
   //emit the game code to the client
-  socket.emit('update game code', newUser.gameCode);
+  var gameCodeText = newUser.gameCode;
+  socket.emit('update game code', 'Your gamecode is ' + gameCodeText);
   socket.emit('update username display', 'Your username is ' + newUser.username);
   userArray.push(newUser); //add user to the connected users array.
   console.table(userArray);
