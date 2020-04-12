@@ -35,6 +35,7 @@
       padding: 15px 32px;
       text-align: center;
       text-decoration: none;
+      font-weight: bold;
       display: inline-block;
       font-size: 16px;
     }
@@ -101,16 +102,18 @@
       });
 
       function createGameWithCode(){
-        console.log('gamecode button pressed');
         socket.emit('create with code', document.getElementById("joinWithCode").value);
+        //alert('Waiting to join game with code ' + document.getElementById("joinWithCode").value);
+        document.getElementById("joinWithCode").value = '';
+        
       }
 
       function joinRandomGame(){
         socket.emit('join random game');
+        $('#gameCode').text('You have been added to the random game queue');
       }
 
       function submitUsername(){
-        var unameText = document.getElementById("enterNewUsername").value;
         socket.emit('update username', document.getElementById("enterNewUsername").value);
         document.getElementById("enterNewUsername").value = '';
       }
@@ -135,6 +138,7 @@
       const COLOR_PLAY2 = "red";
       const COLOR_PLAY2_DRK = "darkred";
       const COLOR_BUTTON_CLASSIC = "#337eb0";
+      const COLOR_BUTTON_TEXT_CLASSIC = "white";
 
       const COLOR_TIE = "darkgrey";
       const COLOR_TIE_DRK = "black";
@@ -151,6 +155,7 @@
       const COLOR_PLAY2_DARK = "lightgreen";
       const COLOR_PLAY2_DRK_DARK = "green";
       const COLOR_BUTTON_DARK = "#262221";
+      const COLOR_BUTTON_TEXT_DARK = "#5d6f8c";
 
       const COLOR_TIE_DARK = "darkgrey";
       const COLOR_TIE_DRK_DARK = "black";
@@ -167,6 +172,7 @@
       const COLOR_PLAY2_CRMSCRN = "red";
       const COLOR_PLAY2_DRK_CRMSCRN = "darkred";
       const COLOR_BUTTON_CRMSCRN = "red";
+      const COLOR_BUTTON_TEXT_CRMSCRN = "darkpurple";
 
       const COLOR_TIE_CRMSCRN = "darkgrey";
       const COLOR_TIE_DRK_CRMSCRN = "black";
@@ -246,7 +252,7 @@
       document.body.appendChild(canv);
       var ctx = canv.getContext("2d");
 
-      // game variables
+      // game variables...?
       var gameOver, gameTied, grid = [], player1Turn;
 
       // dimensions
@@ -270,14 +276,15 @@
       // game loop for a game
       requestAnimationFrame(loop);
 
-      //temp i hope
+      //temp i hope - will be saved in the cookie as the theme? put in a function?
       var bgcolor = COLOR_BACKGROUND;
       var frameColor = COLOR_FRAME;
       var bottomColor = COLOR_FRAME_BUTT;
+      var colorP1 = COLOR_PLAY1;
 
       function loop() {
         // draw
-        drawBackground(bgcolor);
+        drawBackground();
         drawGrid(frameColor, bottomColor);
         drawText();
         // call the next frame
@@ -401,12 +408,12 @@
         }
       }
 
-      function drawBackground(color) {
-        ctx.fillStyle = color;
+      function drawBackground() {
+        ctx.fillStyle = bgcolor;
         ctx.fillRect(0, 0, width, height);
       }
 
-      function drawGrid(frameColor, bottomColor) {
+      function drawGrid() {
 
         // frame and butt
         let cell = grid[0][0];
@@ -571,6 +578,13 @@
         document.getElementById("codeButton").style.backgroundColor = COLOR_BUTTON_CLASSIC;
         document.getElementById("enterNewUsernameButton").style.backgroundColor = COLOR_BUTTON_CLASSIC;
 
+        document.getElementById("themeClassic").style.color = COLOR_BUTTON_TEXT_CLASSIC;
+        document.getElementById("themeDark").style.color = COLOR_BUTTON_TEXT_CLASSIC;
+        document.getElementById("themeCream").style.color = COLOR_BUTTON_TEXT_CLASSIC;
+        document.getElementById("randButton").style.color = COLOR_BUTTON_TEXT_CLASSIC;
+        document.getElementById("codeButton").style.color = COLOR_BUTTON_TEXT_CLASSIC
+        document.getElementById("enterNewUsernameButton").style.color = COLOR_BUTTON_TEXT_CLASSIC;
+
         //background and text
         document.body.style.background = COLOR_BACKGROUND;
         document.getElementById("userNameDisplay").style.color = COLOR_TEXT_CLASSIC;
@@ -579,10 +593,10 @@
 
         //change the colors of the connect 4 board.
         bgcolor = COLOR_BACKGROUND;
-        drawBackground(bgcolor);
+        drawBackground();
         frameColor = COLOR_FRAME;
         bottomColor = COLOR_FRAME_BUTT;
-        drawGrid(frameColor, bottomColor);
+        drawGrid();
 
       }
 
@@ -596,17 +610,24 @@
         document.getElementById("codeButton").style.backgroundColor = COLOR_BUTTON_DARK;
         document.getElementById("enterNewUsernameButton").style.backgroundColor = COLOR_BUTTON_DARK;
 
+        document.getElementById("themeClassic").style.color = COLOR_BUTTON_TEXT_DARK;
+        document.getElementById("themeDark").style.color = COLOR_BUTTON_TEXT_DARK;
+        document.getElementById("themeCream").style.color = COLOR_BUTTON_TEXT_DARK;
+        document.getElementById("randButton").style.color = COLOR_BUTTON_TEXT_DARK;
+        document.getElementById("codeButton").style.color = COLOR_BUTTON_TEXT_DARK;
+        document.getElementById("enterNewUsernameButton").style.color = COLOR_BUTTON_TEXT_DARK;
         //background and text
         document.body.style.background = COLOR_BACKGROUND_DARK;
         document.getElementById("userNameDisplay").style.color = COLOR_TEXT_DARK;
         document.getElementById("gameCode").style.color = COLOR_TEXT_DARK;
         document.getElementById("enterNewUsername").style.color = COLOR_TEXT_DARK; //this doesnt work.
         //change the colors of the connect 4 board
+        colorP1 = COLOR_PLAY1_DARK;
         bgcolor = COLOR_BACKGROUND_DARK;
-        drawBackground(bgcolor);
+        drawBackground();
         frameColor = COLOR_FRAME_DARK;
         bottomColor = COLOR_FRAME_BUTT_DARK;
-        drawGrid(frameColor, bottomColor);
+        drawGrid();
       }
 
       function changeThemeCream(){
@@ -618,6 +639,13 @@
         document.getElementById("codeButton").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
         document.getElementById("enterNewUsernameButton").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
 
+        document.getElementById("themeClassic").style.color = COLOR_BUTTON_TEXT_CRMSCRN;
+        document.getElementById("themeDark").style.color = COLOR_BUTTON_TEXT_CRMSCRN;
+        document.getElementById("themeCream").style.color = COLOR_BUTTON_TEXT_CRMSCRN;
+        document.getElementById("randButton").style.color = COLOR_BUTTON_TEXT_CRMSCRN;
+        document.getElementById("codeButton").style.color = COLOR_BUTTON_TEXT_CRMSCRN
+        document.getElementById("enterNewUsernameButton").style.color = COLOR_BUTTON_TEXT_CRMSCRN;
+
         //background and text
         document.body.style.background = COLOR_BACKGROUND_CRMSCRN;
         document.getElementById("userNameDisplay").style.color = COLOR_TEXT_CRMSCRN;
@@ -626,10 +654,10 @@
 
         //change the colors of the connect 4 board
         bgcolor = COLOR_BACKGROUND_CRMSCRN;
-        drawBackground(bgcolor);
+        drawBackground();
         frameColor = COLOR_FRAME_CRMSCRN;
         bottomColor = COLOR_FRAME_BUTT_CRMSCRN;
-        drawGrid(frameColor, bottomColor);
+        drawGrid();
 
       }
 

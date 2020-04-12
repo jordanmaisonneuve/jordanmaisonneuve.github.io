@@ -8,6 +8,8 @@ client:
 -create join with code
 -change color of peices with each theme
 -add cookies
+-change winner text to the players username - when game is serverized...
+
 
 
 server:
@@ -25,3 +27,4 @@ DONE: :)
 -create new username input - change username
 -generate random usernames that aren't anon123
 -style buttons
+-change button text color too
