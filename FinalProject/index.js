@@ -100,8 +100,8 @@ io.on('connection', function(socket){
     console.table(randomGameQueue);
     if (randomGameQueue.length > 1){
       //todo, need to give this to the two socket ids that are in the queue.
-      //socket.emit('start random game', randomGameQueue[0], randomGameQueue[1]);
-      randomGameQueue = [];
+      socket.emit('start random game');
+      randomGameQueue = []; //only the server needs to know who the opponent is, the rest can be forwarded,
     }
   });
 

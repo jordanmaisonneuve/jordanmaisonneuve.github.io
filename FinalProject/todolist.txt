@@ -2,23 +2,21 @@ Connect 4 TODO list:
 client:
 -get client script to link in external file
 -create waiting page for when queueing into a game.
-  -refactor code so that board is drawn once a user enters a game.
-  -only draw initial options first of all.
 -create join random game
 -create join with code
 -change color of peices with each theme
--add cookies
+-add cookies - directly request username from server when cookie is not set
 -change winner text to the players username - when game is serverized...
 
 
 
 server:
--move game logic to here?
+-move game logic to here
+-directly request username from server when cookie is not set
 
 
 socket stuff:
 -when a user moves update the display for both users
--create a game on the server that requires 2 unique socket ids
 
 
 
@@ -28,3 +26,5 @@ DONE: :)
 -generate random usernames that aren't anon123
 -style buttons
 -change button text color too
+-refactor code so that board is drawn once a user enters a game.
+-only draw initial options first of all.

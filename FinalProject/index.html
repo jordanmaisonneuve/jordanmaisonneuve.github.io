@@ -19,7 +19,7 @@
       display: block;
     }
 
-    .displayGrid {
+    #displayGrid {
       display: grid;
       grid-column-gap: 5px;
       grid-row-gap: 5px;
@@ -59,7 +59,7 @@
 
 <body>
 
-<div class="displayGrid">
+<div id="displayGrid">
       <button id="randButton">Join Random Game</button>
       <button id="codeButton">Join Game with Code</button>
       <input id="joinWithCode" autocomplete="off"/>
@@ -67,7 +67,7 @@
       <button id="themeDark">Dark</button>
       <button id="themeCream">CreamScreen</button>
       <p id="userNameDisplay">Your username is</p>
-      <input type="text" id="enterNewUsername">Enter new username</input>
+      <input id="enterNewUsername">Enter new username</input>
       <button id="enterNewUsernameButton">Submit</button>
       <p id="gameCode">Your game code is .</p>
 </div>
@@ -78,12 +78,9 @@
   <!-- dont know where this is located when run on the server
       <script src="../../clientScript.js"></script>!-->
   <script>
-    $(function() {
       "use strict";
 
       var socket = io(); //socket -- id
-
-
 
       socket.on('update game code', function(gameCode){
         $('#gameCode').text(gameCode);
@@ -93,19 +90,26 @@
         $('#userNameDisplay').text(dispText);
       });
 
-      socket.on('start random game', function(socket1, socket2){
+      socket.on('start random game', function(){
         //TODO initialize game with the two players
+        //remove all the other elements -- todo maybe keep theme changer buttons at the bottom.
+        var myobj = document.getElementById("displayGrid");
+        myobj.remove();
+        document.body.appendChild(canv);
+        requestAnimationFrame(loop);
       });
 
-      socket.on('start game with code', function(socket1, socket2){
+      socket.on('start game with code', function(){
         //TODO initialize game with the two players
+
+        document.body.appendChild(canv);
+        requestAnimationFrame(loop);
       });
 
       function createGameWithCode(){
         socket.emit('create with code', document.getElementById("joinWithCode").value);
         //alert('Waiting to join game with code ' + document.getElementById("joinWithCode").value);
         document.getElementById("joinWithCode").value = '';
-        
       }
 
       function joinRandomGame(){
@@ -249,7 +253,7 @@
       }
       // set up the canvas and context -- i should set this up once the game has beeen started.
       var canv = document.createElement("canvas");
-      document.body.appendChild(canv);
+      //document.body.appendChild(canv);
       var ctx = canv.getContext("2d");
 
       // game variables...?
@@ -274,7 +278,7 @@
       document.getElementById("themeCream").addEventListener("click", changeThemeCream);
 
       // game loop for a game
-      requestAnimationFrame(loop);
+      //requestAnimationFrame(loop);
 
       //temp i hope - will be saved in the cookie as the theme? put in a function?
       var bgcolor = COLOR_BACKGROUND;
@@ -285,7 +289,7 @@
       function loop() {
         // draw
         drawBackground();
-        drawGrid(frameColor, bottomColor);
+        drawGrid();
         drawText();
         // call the next frame
         requestAnimationFrame(loop);
@@ -409,6 +413,7 @@
       }
 
       function drawBackground() {
+        console.log('bgcolor is ' + bgcolor);
         ctx.fillStyle = bgcolor;
         ctx.fillRect(0, 0, width, height);
       }
@@ -600,7 +605,6 @@
 
       }
 
-
       function changeThemeDark(){
         //button colors.
         document.getElementById("themeClassic").style.backgroundColor = COLOR_BUTTON_DARK;
@@ -662,9 +666,39 @@
       }
 
 
+      function setCookie(cname, cvalue, exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+        var expires = "expires="+d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+      }
 
+      function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i = 0; i < ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";
+      }
 
-    });
+      function checkCookie() {
+        var user = getCookie("username");
+        if (user != "") {
+          //they have been here before, give them their userName
+          $('#userNameDisplay').text('Your usename is ' + user + '.');
+        } else {
+          //give them a random username from the server and set their cookie that way,
+          
+        }
+      }
+
 
     //this is my client script -- put in its own file?
     /*$(function () {
@@ -675,25 +709,6 @@
         $('#m').val('');
         return false;
       });*/
-    /*
-          socket.on('chat message', function(msg){
-            $('#messages').append($('<li>').text(msg));
-            //var element = document.getElementById('messages');
-            //element.scrollTop = objDiv.scrollHeight;
-          });
-
-          socket.on('user move', function(){
-            //
-          });
-
-          socket.on('create with code', function(){
-            //when user wants to create a game for their friend to join
-          });
-
-          socket.on('join random game', function(){
-            //when user wants to join a random game with someone in queue
-          });
-    */
     //});
   </script>
 </body>
