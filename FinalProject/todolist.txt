@@ -7,7 +7,7 @@ client:
 -change color of peices with each theme
 -add cookies - directly request username from server when cookie is not set
 -change winner text to the players username - when game is serverized...
-
+-create the page dynamically...
 
 
 server:

@@ -78,12 +78,18 @@ io.on('connection', function(socket){
     console.log('create with code received from ' + getUsername(socket));
     console.log('game code received: ' + gameCode);
 
+    
+
     for (var i = 0; i < userArray.length; i++){
       if (userArray[i].gameCode === gameCode){
         //todo: start a new game with these two users...
-
+        
+        
+        return;
       }
     }
+    //else game code was not found.
+    socket.emit('update game code', "Game code was not found. Try Again.");
 
   });
 
@@ -100,8 +106,21 @@ io.on('connection', function(socket){
     console.table(randomGameQueue);
     if (randomGameQueue.length > 1){
       //todo, need to give this to the two socket ids that are in the queue.
-      socket.emit('start random game');
-      randomGameQueue = []; //only the server needs to know who the opponent is, the rest can be forwarded,
+      for (var i = 0; i < userArray.length; i++){
+          if( randomGameQueue[0] === userArray[i].socketId || randomGameQueue[1] === userArray[i].socketId ){
+              userArray[i].isInGame = true;
+              io.to(userArray[i].socketId).emit('start random game');
+          }
+      }
+      let nGame = {
+        player1: randomGameQueue[0],
+        player2: randomGameQueue[1],
+        grid = []
+      };
+
+      activeGamesList.push(nGame);
+      randomGameQueue = [];
+      console.table(activeGamesList);
     }
   });
 
@@ -219,4 +238,15 @@ function getNickName(){
 
  return nickNames[Math.floor(Math.random() * nickNames.length )];
 
+}
+
+//gets a game from either of the socket ids
+function getGame(socketId){
+  for (var i = 0; i < userArray.length; i++){
+    for (var j = 0; j < activeGamesList.length; j++){
+      if (userArray[i].socketId === socketId){
+        return activeGamesList[j];
+      }
+    }
+  }
 }

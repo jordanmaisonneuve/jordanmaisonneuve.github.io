@@ -7,12 +7,11 @@
   <link rel="stylesheet" type="text/css" href="css/styles.css">
   <style>
 
-  html {
-    background-color: lightyellow;
-  }
+
     body {
       margin: 0;
       /*overflow: hidden;*/
+      background-color: lightyellow;
     }
 
     canvas {
@@ -20,12 +19,14 @@
     }
 
     #displayGrid {
+      
       display: grid;
-      grid-column-gap: 5px;
-      grid-row-gap: 5px;
-      grid-template-columns: 33% 33% 33%;
-      grid-template-rows: 25% 25% ;
+      grid-column-gap: 1%;
+      grid-row-gap: 1%;
+      grid-template-columns: 11% 26% 26% 26% 11%;
+      grid-template-rows: 25% 15% 15% 15% 15% 15% ;
     }
+
 
     button {
       background-color: #337eb0;
@@ -48,29 +49,102 @@
     input {
       font-family: Arial;
       font-size: 1.2rem;
+      margin: 1% 1% 1% 1%;
+      padding: 15px 32px;
+      text-align: left;
+      text-decoration: none;
+      font-weight: bold;
+      display: inline-block;
+      font-size: 16px;
     }
 
-    .enterNewUsername {
-      float: top;
-      font-size: 40px;
-    }
+    #connectFourTitle {
+        grid-column: 2 / span 3;
+        grid-row: 1;
+        font-family: Arial;
+        font-size: 3rem;
+        color: black;
+        justify-self: center;
+      }
+
+
+      #randButton {
+        grid-column: 2;
+        grid-row: 3;
+      }
+
+      #codeButton {
+        grid-column: 3;
+        grid-row: 3;
+      }
+
+      #joinWithCode {
+        grid-column: 4;
+        grid-row: 3;
+      }
+
+      #userNameDisplay {
+        grid-column: 2 / span 3;
+        grid-row-start: 2;
+        grid-row-end: 2;
+        justify-self: center;
+        font-size: 1.5rem;
+      }
+
+      #enterNewUsername {
+        grid-column: 3;
+        grid-row: 5;
+      }
+
+      #enterNewUsernameButton {
+        grid-column: 4;
+        grid-row: 5;
+      }
+
+      #gameCode {
+        grid-column: 2 / span 3;
+        grid-row: 4;
+        justify-self: center;
+      }
+      
+      #themeClassic {
+        grid-column: 2;
+        grid-row: 6;
+      }
+
+      #themeDark {
+        grid-column: 3;
+        grid-row: 6;
+      }
+
+      #themeCream {
+        grid-column: 4;
+        grid-row: 6;
+      }
+      
+
+
+
   </style>
 </head>
 
 <body>
 
 <div id="displayGrid">
+      <p id="connectFourTitle">Connect 4!</p>
       <button id="randButton">Join Random Game</button>
       <button id="codeButton">Join Game with Code</button>
-      <input id="joinWithCode" autocomplete="off"/>
+      <input id="joinWithCode" autocomplete="off" placeholder="Enter Game Code"/>
+      <p id="userNameDisplay">Your username is</p>
+      <input id="enterNewUsername" placeholder="Enter new username"></input>
+      <button id="enterNewUsernameButton">Submit</button>
+      <p id="gameCode">Your game code is .</p>
       <button id="themeClassic">Classic</button>
       <button id="themeDark">Dark</button>
       <button id="themeCream">CreamScreen</button>
-      <p id="userNameDisplay">Your username is</p>
-      <input id="enterNewUsername">Enter new username</input>
-      <button id="enterNewUsernameButton">Submit</button>
-      <p id="gameCode">Your game code is .</p>
 </div>
+
+
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/jquery/dist/jquery.js"></script>
@@ -92,23 +166,21 @@
 
       socket.on('start random game', function(){
         //TODO initialize game with the two players
-        //remove all the other elements -- todo maybe keep theme changer buttons at the bottom.
-        var myobj = document.getElementById("displayGrid");
-        myobj.remove();
+        //remove all the other elements
+        removeElementsForGame();
         document.body.appendChild(canv);
         requestAnimationFrame(loop);
       });
 
       socket.on('start game with code', function(){
         //TODO initialize game with the two players
-
+        removeElementsForGame();
         document.body.appendChild(canv);
         requestAnimationFrame(loop);
       });
 
       function createGameWithCode(){
         socket.emit('create with code', document.getElementById("joinWithCode").value);
-        //alert('Waiting to join game with code ' + document.getElementById("joinWithCode").value);
         document.getElementById("joinWithCode").value = '';
       }
 
@@ -121,15 +193,20 @@
         socket.emit('update username', document.getElementById("enterNewUsername").value);
         document.getElementById("enterNewUsername").value = '';
       }
+    
+      function removeElementsForGame(){
+        removeElement("randButton");
+        removeElement("codeButton");
+        removeElement("joinWithCode");
+        removeElement("gameCode");
+      }
+
+      function removeElement(id){
+        var myobj = document.getElementById(id);
+        myobj.remove();
+      }
 
 
-      //CONECT 4 GAME
-      // game parameters
-
-      const GRID_CIRCLE = 0.7; // circle size as a fraction of cell size
-      const GRID_COLS = 7; // number of game columns
-      const GRID_ROWS = 6; // number of game rows
-      const MARGIN = 0.02; // margin as a fraction of the shortest screen dimension
 
       // colours -- Classic
       const COLOR_BACKGROUND = "lightyellow";
@@ -169,7 +246,7 @@
       const COLOR_BACKGROUND_CRMSCRN = "pink";
       const COLOR_FRAME_CRMSCRN = "#db40de";
       const COLOR_FRAME_BUTT_CRMSCRN = "darkpink";
-      const COLOR_TEXT_CRMSCRN = "cyan";
+      const COLOR_TEXT_CRMSCRN = "darkgreen";
 
       const COLOR_PLAY1_CRMSCRN = "yellow";
       const COLOR_PLAY1_DRK_CRMSCRN = "olive";
@@ -188,6 +265,160 @@
       const TEXT_PLAY2 = "Player 2";
       const TEXT_TIE = "DRAW";
       const TEXT_WIN = "WINS!";
+
+      // event listeners to buttons
+      document.getElementById("enterNewUsernameButton").addEventListener("click", submitUsername);
+      document.getElementById("randButton").addEventListener("click", joinRandomGame);
+      document.getElementById("codeButton").addEventListener("click", createGameWithCode);
+
+      document.getElementById("themeClassic").addEventListener("click", changeThemeClassic);
+      document.getElementById("themeDark").addEventListener("click", changeThemeDark);
+      document.getElementById("themeCream").addEventListener("click", changeThemeCream);
+
+
+
+
+      //temp i hope - will be saved in the cookie as the theme? put in a function?
+      var bgcolor = COLOR_BACKGROUND;
+      var frameColor = COLOR_FRAME;
+      var bottomColor = COLOR_FRAME_BUTT;
+
+      
+      function changeThemeClassic(){
+        //button colors.
+        document.getElementById("themeClassic").style.backgroundColor = COLOR_BUTTON_CLASSIC;
+        document.getElementById("themeDark").style.backgroundColor = COLOR_BUTTON_CLASSIC;
+        document.getElementById("themeCream").style.backgroundColor = COLOR_BUTTON_CLASSIC;
+        document.getElementById("randButton").style.backgroundColor = COLOR_BUTTON_CLASSIC;
+        document.getElementById("codeButton").style.backgroundColor = COLOR_BUTTON_CLASSIC;
+        document.getElementById("enterNewUsernameButton").style.backgroundColor = COLOR_BUTTON_CLASSIC;
+
+        document.getElementById("themeClassic").style.color = COLOR_BUTTON_TEXT_CLASSIC;
+        document.getElementById("themeDark").style.color = COLOR_BUTTON_TEXT_CLASSIC;
+        document.getElementById("themeCream").style.color = COLOR_BUTTON_TEXT_CLASSIC;
+        document.getElementById("randButton").style.color = COLOR_BUTTON_TEXT_CLASSIC;
+        document.getElementById("codeButton").style.color = COLOR_BUTTON_TEXT_CLASSIC
+        document.getElementById("enterNewUsernameButton").style.color = COLOR_BUTTON_TEXT_CLASSIC;
+
+        //background and text
+        document.body.style.background = COLOR_BACKGROUND;
+        document.getElementById("userNameDisplay").style.color = COLOR_TEXT_CLASSIC;
+        document.getElementById("gameCode").style.color = COLOR_TEXT_CLASSIC;
+        document.getElementById("enterNewUsername").style.color = COLOR_TEXT_CLASSIC;
+        document.getElementById("connectFourTitle").style.color = COLOR_TEXT_CLASSIC;
+
+        //change the colors of the connect 4 board.
+        bgcolor = COLOR_BACKGROUND;
+        //drawBackground();
+        frameColor = COLOR_FRAME;
+        bottomColor = COLOR_FRAME_BUTT;
+        //drawGrid();
+
+      }
+
+      function changeThemeDark(){
+        //button colors.
+        document.getElementById("themeClassic").style.backgroundColor = COLOR_BUTTON_DARK;
+        document.getElementById("themeDark").style.backgroundColor = COLOR_BUTTON_DARK;
+        document.getElementById("themeCream").style.backgroundColor = COLOR_BUTTON_DARK;
+        document.getElementById("randButton").style.backgroundColor = COLOR_BUTTON_DARK;
+        document.getElementById("codeButton").style.backgroundColor = COLOR_BUTTON_DARK;
+        document.getElementById("enterNewUsernameButton").style.backgroundColor = COLOR_BUTTON_DARK;
+
+        document.getElementById("themeClassic").style.color = COLOR_BUTTON_TEXT_DARK;
+        document.getElementById("themeDark").style.color = COLOR_BUTTON_TEXT_DARK;
+        document.getElementById("themeCream").style.color = COLOR_BUTTON_TEXT_DARK;
+        document.getElementById("randButton").style.color = COLOR_BUTTON_TEXT_DARK;
+        document.getElementById("codeButton").style.color = COLOR_BUTTON_TEXT_DARK;
+        document.getElementById("enterNewUsernameButton").style.color = COLOR_BUTTON_TEXT_DARK;
+        //background and text
+        document.body.style.background = COLOR_BACKGROUND_DARK;
+        document.getElementById("userNameDisplay").style.color = COLOR_TEXT_DARK;
+        document.getElementById("gameCode").style.color = COLOR_TEXT_DARK;
+        document.getElementById("enterNewUsername").style.color = COLOR_TEXT_DARK; //this doesnt work.
+        document.getElementById("connectFourTitle").style.color = COLOR_TEXT_DARK;
+        //change the colors of the connect 4 board
+        bgcolor = COLOR_BACKGROUND_DARK;
+        frameColor = COLOR_FRAME_DARK;
+        bottomColor = COLOR_FRAME_BUTT_DARK;
+        //drawBackground();
+        //drawGrid();
+      }
+
+      function changeThemeCream(){
+        //button colors.
+        document.getElementById("themeClassic").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
+        document.getElementById("themeDark").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
+        document.getElementById("themeCream").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
+        document.getElementById("randButton").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
+        document.getElementById("codeButton").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
+        document.getElementById("enterNewUsernameButton").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
+
+        document.getElementById("themeClassic").style.color = COLOR_BUTTON_TEXT_CRMSCRN;
+        document.getElementById("themeDark").style.color = COLOR_BUTTON_TEXT_CRMSCRN;
+        document.getElementById("themeCream").style.color = COLOR_BUTTON_TEXT_CRMSCRN;
+        document.getElementById("randButton").style.color = COLOR_BUTTON_TEXT_CRMSCRN;
+        document.getElementById("codeButton").style.color = COLOR_BUTTON_TEXT_CRMSCRN
+        document.getElementById("enterNewUsernameButton").style.color = COLOR_BUTTON_TEXT_CRMSCRN;
+
+        //background and text
+        document.body.style.background = COLOR_BACKGROUND_CRMSCRN;
+        document.getElementById("userNameDisplay").style.color = COLOR_TEXT_CRMSCRN;
+        document.getElementById("gameCode").style.color = COLOR_TEXT_CRMSCRN;
+        document.getElementById("enterNewUsername").style.color = COLOR_TEXT_CRMSCRN; //doesnt work/
+        document.getElementById("connectFourTitle").style.color = COLOR_TEXT_CRMSCRN;
+
+        //change the colors of the connect 4 board
+        bgcolor = COLOR_BACKGROUND_CRMSCRN;
+        //drawBackground();
+        frameColor = COLOR_FRAME_CRMSCRN;
+        bottomColor = COLOR_FRAME_BUTT_CRMSCRN;
+        //drawGrid();
+
+      }
+
+
+      function setCookie(cname, cvalue, exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+        var expires = "expires="+d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+      }
+
+      function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i = 0; i < ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";
+      }
+
+      function checkCookie() {
+        var user = getCookie("username");
+        if (user != "") {
+          //they have been here before, give them their userName
+          $('#userNameDisplay').text('Your usename is ' + user + '.');
+        } else {
+          //give them a random username from the server and set their cookie that way,
+          
+        }
+      }
+
+
+      //CONECT 4 GAME
+      // game parameters
+
+      const GRID_CIRCLE = 0.7; // circle size as a fraction of cell size
+      const GRID_COLS = 7; // number of game columns
+      const GRID_ROWS = 6; // number of game rows
+      const MARGIN = 0.02; // margin as a fraction of the shortest screen dimension
 
       // classes
       class Cell {
@@ -253,7 +484,6 @@
       }
       // set up the canvas and context -- i should set this up once the game has beeen started.
       var canv = document.createElement("canvas");
-      //document.body.appendChild(canv);
       var ctx = canv.getContext("2d");
 
       // game variables...?
@@ -267,24 +497,9 @@
       canv.addEventListener("click", click);
       canv.addEventListener("mousemove", highlightGrid);
       window.addEventListener("resize", setDimensions);
-
-      // event listeners to buttons
-      document.getElementById("enterNewUsernameButton").addEventListener("click", submitUsername);
-      document.getElementById("randButton").addEventListener("click", joinRandomGame);
-      document.getElementById("codeButton").addEventListener("click", createGameWithCode);
-
-      document.getElementById("themeClassic").addEventListener("click", changeThemeClassic);
-      document.getElementById("themeDark").addEventListener("click", changeThemeDark);
-      document.getElementById("themeCream").addEventListener("click", changeThemeCream);
-
+            
       // game loop for a game
       //requestAnimationFrame(loop);
-
-      //temp i hope - will be saved in the cookie as the theme? put in a function?
-      var bgcolor = COLOR_BACKGROUND;
-      var frameColor = COLOR_FRAME;
-      var bottomColor = COLOR_FRAME_BUTT;
-      var colorP1 = COLOR_PLAY1;
 
       function loop() {
         // draw
@@ -295,6 +510,7 @@
         requestAnimationFrame(loop);
       }
 
+      //move to server.
       function checkWin(row, col) {
         // get all the cells from each direction
         let diagL = [],
@@ -503,7 +719,7 @@
         highlightCell(ev.clientX, ev.clientY);
       }
 
-      //set up logic so it requires 2 players to begin.
+      //set up logic so it requires 2 players to begin. - server 
       function newGame() {
 
         socket.emit('new game');
@@ -514,7 +730,7 @@
         createGrid();
       }
 
-      //used to update when the cell is clicked.
+      //used to update when the cell is clicked. - send to server?
       function selectCell() {
 
         let highlighting = false;
@@ -573,144 +789,11 @@
         newGame();
 
       }
-
-      function changeThemeClassic(){
-        //button colors.
-        document.getElementById("themeClassic").style.backgroundColor = COLOR_BUTTON_CLASSIC;
-        document.getElementById("themeDark").style.backgroundColor = COLOR_BUTTON_CLASSIC;
-        document.getElementById("themeCream").style.backgroundColor = COLOR_BUTTON_CLASSIC;
-        document.getElementById("randButton").style.backgroundColor = COLOR_BUTTON_CLASSIC;
-        document.getElementById("codeButton").style.backgroundColor = COLOR_BUTTON_CLASSIC;
-        document.getElementById("enterNewUsernameButton").style.backgroundColor = COLOR_BUTTON_CLASSIC;
-
-        document.getElementById("themeClassic").style.color = COLOR_BUTTON_TEXT_CLASSIC;
-        document.getElementById("themeDark").style.color = COLOR_BUTTON_TEXT_CLASSIC;
-        document.getElementById("themeCream").style.color = COLOR_BUTTON_TEXT_CLASSIC;
-        document.getElementById("randButton").style.color = COLOR_BUTTON_TEXT_CLASSIC;
-        document.getElementById("codeButton").style.color = COLOR_BUTTON_TEXT_CLASSIC
-        document.getElementById("enterNewUsernameButton").style.color = COLOR_BUTTON_TEXT_CLASSIC;
-
-        //background and text
-        document.body.style.background = COLOR_BACKGROUND;
-        document.getElementById("userNameDisplay").style.color = COLOR_TEXT_CLASSIC;
-        document.getElementById("gameCode").style.color = COLOR_TEXT_CLASSIC;
-        document.getElementById("enterNewUsername").style.color = COLOR_TEXT_CLASSIC;
-
-        //change the colors of the connect 4 board.
-        bgcolor = COLOR_BACKGROUND;
-        drawBackground();
-        frameColor = COLOR_FRAME;
-        bottomColor = COLOR_FRAME_BUTT;
-        drawGrid();
-
-      }
-
-      function changeThemeDark(){
-        //button colors.
-        document.getElementById("themeClassic").style.backgroundColor = COLOR_BUTTON_DARK;
-        document.getElementById("themeDark").style.backgroundColor = COLOR_BUTTON_DARK;
-        document.getElementById("themeCream").style.backgroundColor = COLOR_BUTTON_DARK;
-        document.getElementById("randButton").style.backgroundColor = COLOR_BUTTON_DARK;
-        document.getElementById("codeButton").style.backgroundColor = COLOR_BUTTON_DARK;
-        document.getElementById("enterNewUsernameButton").style.backgroundColor = COLOR_BUTTON_DARK;
-
-        document.getElementById("themeClassic").style.color = COLOR_BUTTON_TEXT_DARK;
-        document.getElementById("themeDark").style.color = COLOR_BUTTON_TEXT_DARK;
-        document.getElementById("themeCream").style.color = COLOR_BUTTON_TEXT_DARK;
-        document.getElementById("randButton").style.color = COLOR_BUTTON_TEXT_DARK;
-        document.getElementById("codeButton").style.color = COLOR_BUTTON_TEXT_DARK;
-        document.getElementById("enterNewUsernameButton").style.color = COLOR_BUTTON_TEXT_DARK;
-        //background and text
-        document.body.style.background = COLOR_BACKGROUND_DARK;
-        document.getElementById("userNameDisplay").style.color = COLOR_TEXT_DARK;
-        document.getElementById("gameCode").style.color = COLOR_TEXT_DARK;
-        document.getElementById("enterNewUsername").style.color = COLOR_TEXT_DARK; //this doesnt work.
-        //change the colors of the connect 4 board
-        colorP1 = COLOR_PLAY1_DARK;
-        bgcolor = COLOR_BACKGROUND_DARK;
-        drawBackground();
-        frameColor = COLOR_FRAME_DARK;
-        bottomColor = COLOR_FRAME_BUTT_DARK;
-        drawGrid();
-      }
-
-      function changeThemeCream(){
-        //button colors.
-        document.getElementById("themeClassic").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
-        document.getElementById("themeDark").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
-        document.getElementById("themeCream").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
-        document.getElementById("randButton").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
-        document.getElementById("codeButton").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
-        document.getElementById("enterNewUsernameButton").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
-
-        document.getElementById("themeClassic").style.color = COLOR_BUTTON_TEXT_CRMSCRN;
-        document.getElementById("themeDark").style.color = COLOR_BUTTON_TEXT_CRMSCRN;
-        document.getElementById("themeCream").style.color = COLOR_BUTTON_TEXT_CRMSCRN;
-        document.getElementById("randButton").style.color = COLOR_BUTTON_TEXT_CRMSCRN;
-        document.getElementById("codeButton").style.color = COLOR_BUTTON_TEXT_CRMSCRN
-        document.getElementById("enterNewUsernameButton").style.color = COLOR_BUTTON_TEXT_CRMSCRN;
-
-        //background and text
-        document.body.style.background = COLOR_BACKGROUND_CRMSCRN;
-        document.getElementById("userNameDisplay").style.color = COLOR_TEXT_CRMSCRN;
-        document.getElementById("gameCode").style.color = COLOR_TEXT_CRMSCRN;
-        document.getElementById("enterNewUsername").style.color = COLOR_TEXT_CRMSCRN; //doesnt work/
-
-        //change the colors of the connect 4 board
-        bgcolor = COLOR_BACKGROUND_CRMSCRN;
-        drawBackground();
-        frameColor = COLOR_FRAME_CRMSCRN;
-        bottomColor = COLOR_FRAME_BUTT_CRMSCRN;
-        drawGrid();
-
-      }
-
-
-      function setCookie(cname, cvalue, exdays) {
-        var d = new Date();
-        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-        var expires = "expires="+d.toUTCString();
-        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-      }
-
-      function getCookie(cname) {
-        var name = cname + "=";
-        var ca = document.cookie.split(';');
-        for(var i = 0; i < ca.length; i++) {
-          var c = ca[i];
-          while (c.charAt(0) == ' ') {
-            c = c.substring(1);
-          }
-          if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
-          }
-        }
-        return "";
-      }
-
-      function checkCookie() {
-        var user = getCookie("username");
-        if (user != "") {
-          //they have been here before, give them their userName
-          $('#userNameDisplay').text('Your usename is ' + user + '.');
-        } else {
-          //give them a random username from the server and set their cookie that way,
-          
-        }
-      }
-
-
-    //this is my client script -- put in its own file?
-    /*$(function () {
-      var socket = io();
-      $('form').submit(function(e){
-        e.preventDefault(); // prevents page reloading
-        socket.emit('chat message', $('#m').val());
-        $('#m').val('');
-        return false;
-      });*/
-    //});
   </script>
 </body>
 
 </html>
+
+<!--
+
+    -->
