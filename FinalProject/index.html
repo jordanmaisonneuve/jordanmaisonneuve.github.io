@@ -370,9 +370,13 @@
         bottomColor = COLOR_FRAME_BUTT;
         
         drawBackground();
-
         try{
-          drawGrid();
+          drawGrid(); 
+        }
+        catch (err){
+          
+        }
+        try{
           document.getElementById("randButton").style.backgroundColor = COLOR_BUTTON_CLASSIC;
           document.getElementById("codeButton").style.backgroundColor = COLOR_BUTTON_CLASSIC;
           document.getElementById("randButton").style.color = COLOR_BUTTON_TEXT_CLASSIC;
@@ -409,9 +413,13 @@
         bottomColor = COLOR_FRAME_BUTT_DARK;
         
         drawBackground();
-
+        try{
+          drawGrid(); 
+        }
+        catch (err){
+          
+        }
         try {
-          drawGrid();
           document.getElementById("randButton").style.backgroundColor = COLOR_BUTTON_DARK;
           document.getElementById("codeButton").style.backgroundColor = COLOR_BUTTON_DARK;
           document.getElementById("randButton").style.color = COLOR_BUTTON_TEXT_DARK;
@@ -451,6 +459,12 @@
 
         try{
           drawGrid(); 
+        }
+        catch (err){
+
+        }
+        try{
+          
           document.getElementById("randButton").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
           document.getElementById("codeButton").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
           document.getElementById("randButton").style.color = COLOR_BUTTON_TEXT_CRMSCRN;
@@ -718,16 +732,6 @@
         highlightCell(ev.clientX, ev.clientY);
       }
 
-      /*function newGame() {
-
-        socket.emit('new game');
-
-        player1Turn = Math.random() < 0.5;
-        gameOver = false;
-        gameTied = false;
-        createGrid();
-      }*/
-
       //used to update when the cell is clicked. - send to server
       function selectCell() {
 
@@ -738,17 +742,19 @@
               highlighting = true;
               cell.highlight = null;
               cell.owner = player1Turn;
-              if (checkWin(cell.row, cell.col)) {
+              /*if (checkWin(cell.row, cell.col)) {
                 gameOver = true;
-              }
+              }*/
               console.log('user move detected at [' + cell.row + ' , ' + cell.col + ']');
+              var selectedCell = [cell.row , cell.col];
+              socket.emit('user move', selectedCell);
               break OUTER;
             }
           }
         }
 
         // don't allow selection if no highlighting
-        if (!highlighting) {
+        /*if (!highlighting) {
           return;
         }
 
@@ -774,7 +780,7 @@
         if (!gameOver) {
           player1Turn = !player1Turn;
         }
-        socket.emit('user move');
+        socket.emit('user move');*/
       }
 
       function setDimensions() {
@@ -789,51 +795,3 @@
 </body>
 
 </html>
-<!--
-       function selectCellOLD() {
-
-        let highlighting = false;
-        OUTER: for (let row of grid) {
-          for (let cell of row) {
-            if (cell.highlight != null) {
-              highlighting = true;
-              cell.highlight = null;
-              cell.owner = player1Turn;
-              if (checkWin(cell.row, cell.col)) {
-                gameOver = true;
-              }
-              break OUTER;
-            }
-          }
-        }
-
-        // don't allow selection if no highlighting
-        if (!highlighting) {
-          return;
-        }
-
-        // check for a tied game
-        if (!gameOver) {
-          gameTied = true;
-          OUTER: for (let row of grid) {
-            for (let cell of row) {
-              if (cell.owner == null) {
-                gameTied = false;
-                break OUTER;
-              }
-            }
-          }
-
-          // set game over
-          if (gameTied) {
-            gameOver = true;
-          }
-        }
-
-        // switch the player if no game over
-        if (!gameOver) {
-          player1Turn = !player1Turn;
-        }
-        socket.emit('user move');
-      }
--->
