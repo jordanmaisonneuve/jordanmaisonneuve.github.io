@@ -18,10 +18,7 @@ app.get('/', function(req, res,next) {
 });
 
 io.on('connection', function(socket){
-  //TODO determine if user has been here before... cookie?
-
   console.log('a user connected socket: ' + socket.id);
-
   let newUser = {
     socketId: socket.id,
     username: getNickName(),
@@ -69,13 +66,14 @@ io.on('connection', function(socket){
     //going to need to send information to update the display for the connected users
     var game = getGame(socket.id); //get the game associated with this socket.
     
-    //TODO -- check for winner...
-
+    
 
     var row, col, otherSocket;
     row = cellSelected[0];
     col = cellSelected[1];
     
+
+
     if (game.player1Turn){
       otherSocket = game.player2;
     }
@@ -84,6 +82,9 @@ io.on('connection', function(socket){
     }
 
     game.grid[row][col] = isPlayer1(socket); // true/false based on whose turn.
+
+
+
     console.table(game.grid);
     console.table(activeGamesList);
     game.player1Turn = !game.player1Turn;
@@ -91,6 +92,14 @@ io.on('connection', function(socket){
     //update the moves for the users.
     socket.emit('wait for move', game.grid); //socket that just moved
     io.to(otherSocket).emit('your move', game.grid); //other player
+
+    //check for winner...
+    if (checkWin(game, row, col)){
+      //game is over declare winner!
+      console.log('we have a winner!! user: ' + getUsername(socket));
+      socket.emit('game over winner');
+      io.to(otherSocket).emit('game over loser');
+    }
 
   });
 
@@ -267,14 +276,17 @@ function createGrid() {
   return grid;
 }
 
-
-//move to server.
-function checkWin(row, col) {
+function checkWin(game, row, col) {
   // get all the cells from each direction
   let diagL = [],
     diagR = [],
     horiz = [],
     vert = [];
+
+  let grid = game.grid;
+  console.log('the grid is...');
+  console.table(grid);
+
   for (let i = 0; i < GRID_ROWS; i++) {
     for (let j = 0; j < GRID_COLS; j++) {
 
@@ -300,6 +312,10 @@ function checkWin(row, col) {
     }
   }
 
+  console.log('horiz is ' + horiz);
+  console.log('vert is ' + vert);
+  console.log('diagL is ' + diagR);
+  console.log('diagR is ' + diagL);
   // if any have four in a row, return a win!
   return connect4(diagL) || connect4(diagR) || connect4(horiz) || connect4(vert);
 }
@@ -313,12 +329,12 @@ function connect4(cells = []) {
   for (let i = 0; i < cells.length; i++) {
 
     // initialization w/ no owner reset count
-    if (cells[i].owner == null) {
+    if (cells[i] == null) {
       count = 0;
       winningCells = [];
     }
     // same owner, add to the count
-    else if (cells[i].owner == lastOwner) {
+    else if (cells[i] == lastOwner) {
       count++;
       winningCells.push(cells[i]);
     }
@@ -329,7 +345,11 @@ function connect4(cells = []) {
       winningCells.push(cells[i]);
     }
 
-    lastOwner = cells[i].owner;
+    //console.log('winning cells are: ');
+    //console.table(winningCells);
+    console.log('count is ' + count);
+
+    lastOwner = cells[i];
 
     // four wins
     if (count == 4) {

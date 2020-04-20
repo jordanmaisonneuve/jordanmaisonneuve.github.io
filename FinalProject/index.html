@@ -242,6 +242,16 @@
 
       });
 
+      socket.on('game over winner', function() {
+        console.log('you won!!!');
+        //display winning text on screen...
+      });
+
+      socket.on('game over loser', function() {
+        console.log('you lost :(');
+        //display losing text on screen...
+      });
+
       function createGameWithCode(){
         socket.emit('create with code', document.getElementById("joinWithCode").value);
         document.getElementById("joinWithCode").value = '';
@@ -703,7 +713,7 @@
         highlightCell(ev.clientX, ev.clientY);
       }
 
-      //used to update when the cell is clicked. - send to server
+      //used to update when the cell is clicked. sent to server
       function selectCell() {
 
         let highlighting = false;
@@ -713,9 +723,6 @@
               highlighting = true;
               cell.highlight = null;
               cell.owner = player1Turn;
-              /*if (checkWin(cell.row, cell.col)) {
-                gameOver = true;
-              }*/
               console.log('user move detected at [' + cell.row + ' , ' + cell.col + ']');
               var selectedCell = [cell.row , cell.col];
               socket.emit('user move', selectedCell);
