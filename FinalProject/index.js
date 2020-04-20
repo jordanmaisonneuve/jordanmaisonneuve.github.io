@@ -64,42 +64,47 @@ io.on('connection', function(socket){
   socket.on('user move', function (cellSelected){
     console.log('user move detected from: ' + getUsername(socket) + '\ncell selected was ' + cellSelected);
     //going to need to send information to update the display for the connected users
-    var game = getGame(socket.id); //get the game associated with this socket.
-    
-    
+    try{
+      var game = getGame(socket.id); //get the game associated with this socket.
+      
+      var row, col, otherSocket;
+      row = cellSelected[0];
+      col = cellSelected[1];
+      
+      if (game.player1Turn){
+        otherSocket = game.player2;
+      }
+      else {
+        otherSocket = game.player1;
+      }
 
-    var row, col, otherSocket;
-    row = cellSelected[0];
-    col = cellSelected[1];
-    
+      game.grid[row][col] = isPlayer1(socket); // true/false based on whose turn.
 
+      game.player1Turn = !game.player1Turn;
 
-    if (game.player1Turn){
-      otherSocket = game.player2;
-    }
-    else {
-      otherSocket = game.player1;
-    }
+      //update the moves for the users.
+      socket.emit('wait for move', game.grid); //socket that just moved
+      io.to(otherSocket).emit('your move', game.grid); //other player
 
-    game.grid[row][col] = isPlayer1(socket); // true/false based on whose turn.
+      //check for winner...
+      if (checkWin(game, row, col)){
+        //game is over declare winner!
+        console.log('we have a winner!! user: ' + getUsername(socket));
+        socket.emit('game over winner');
+        io.to(otherSocket).emit('game over loser');
 
+        //remove game from list
+        for (var i = 0; i < activeGamesList.length; i++){
+          if (activeGamesList[i] === game){
+            activeGamesList.splice(i, i +  1);
+          }
+        }
+        
+      }
 
-
-    console.table(game.grid);
-    console.table(activeGamesList);
-    game.player1Turn = !game.player1Turn;
-
-    //update the moves for the users.
-    socket.emit('wait for move', game.grid); //socket that just moved
-    io.to(otherSocket).emit('your move', game.grid); //other player
-
-    //check for winner...
-    if (checkWin(game, row, col)){
-      //game is over declare winner!
-      console.log('we have a winner!! user: ' + getUsername(socket));
-      socket.emit('game over winner');
-      io.to(otherSocket).emit('game over loser');
-    }
+      //TODO -- check for draw...
+  }
+  catch(err){}
 
   });
 
@@ -107,10 +112,7 @@ io.on('connection', function(socket){
     console.log('create with code received from ' + getUsername(socket) + ' game code received: ' + gameCode);
     
     for (var i = 0; i < userArray.length; i++){
-      console.log('game code at index ' + i + ': ' + userArray[i].gameCode);
       if (userArray[i].gameCode == gameCode){
-
-        console.log('game code match found!');
         newGame(socket.id, userArray[i].socketId);
         var game = getGame(socket.id);
         var gameboard = game.grid;
@@ -127,14 +129,11 @@ io.on('connection', function(socket){
         //todo add isingame true!
         userArray[i].isInGame = true;
         var usr = getUser(socket);
-        console.log('user found ' + usr);
         usr.isInGame = true;
-        console.table(userArray);
         return;
       }
     }
     //else game code was not found.
-    console.log('loop done...');
     socket.emit('update game code', "Game code was not found. Try Again.");
 
   });
@@ -284,8 +283,6 @@ function checkWin(game, row, col) {
     vert = [];
 
   let grid = game.grid;
-  console.log('the grid is...');
-  console.table(grid);
 
   for (let i = 0; i < GRID_ROWS; i++) {
     for (let j = 0; j < GRID_COLS; j++) {
@@ -311,11 +308,6 @@ function checkWin(game, row, col) {
       }
     }
   }
-
-  console.log('horiz is ' + horiz);
-  console.log('vert is ' + vert);
-  console.log('diagL is ' + diagR);
-  console.log('diagR is ' + diagL);
   // if any have four in a row, return a win!
   return connect4(diagL) || connect4(diagR) || connect4(horiz) || connect4(vert);
 }
@@ -344,10 +336,6 @@ function connect4(cells = []) {
       winningCells = [];
       winningCells.push(cells[i]);
     }
-
-    //console.log('winning cells are: ');
-    //console.table(winningCells);
-    console.log('count is ' + count);
 
     lastOwner = cells[i];
 
