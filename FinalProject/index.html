@@ -128,7 +128,7 @@
   </style>
 </head>
 
-<body>
+<body onload="checkCookie()">
 
 <div id="displayGrid">
       <p id="connectFourTitle">Connect 4!</p>
@@ -155,28 +155,93 @@
       "use strict";
 
       var socket = io(); //socket -- id
-
+      var currentUsername = '';
+      
       socket.on('update game code', function(gameCode){
         $('#gameCode').text(gameCode);
       });
 
       socket.on('update username display', function(dispText){
-        $('#userNameDisplay').text(dispText);
+        //console.log(dispText);
+          var name = dispText.slice(17, dispText.length);
+          currentUsername = name;
+          $('#userNameDisplay').text(dispText);
       });
 
-      socket.on('start random game', function(){
-        //TODO initialize game with the two players
-        //remove all the other elements
+      //server has said we can start a game...
+      socket.on('start game', function(gb){
         removeElementsForGame();
-        document.body.appendChild(canv);
-        requestAnimationFrame(loop);
+        //draw a connect 4 board.  
+        createBoard(gb);
+        //TODO not their turn, disable input, show waiting text. 
+
+        //... remove event listener for clicks on the canvas??
+        canv.removeEventListener("click", selectCell);
       });
 
-      socket.on('start game with code', function(){
-        //TODO initialize game with the two players
+      socket.on('start game your turn', function(gb){
         removeElementsForGame();
+        console.log('its your turn');
+        createBoard(gb);
+        //TODO - this players turn, allow them to move.
+
+        //...
+        canv.addEventListener("click", selectCell);
+      });
+
+      function createBoard(gameBoard){
         document.body.appendChild(canv);
-        requestAnimationFrame(loop);
+        //im given numbers for which cell is occupied by which player or empty, 
+        //the rest of the drawing is done by the client.
+        setDimensions(); //sets client variables, going to need to update gameBoard.
+        createGrid();
+
+        ctx.fillStyle = bgcolor;
+        ctx.fillRect(0, 0, width, height);
+        console.log(gameBoard);
+
+        updateGrid(gameBoard);
+        
+        //draw the rectangle for the board.
+        let cell = grid[0][0];
+        let fh = cell.h * GRID_ROWS;
+        let fw = cell.w * GRID_COLS;
+        ctx.fillStyle = frameColor;
+        ctx.fillRect(cell.left, cell.top, fw, fh);
+
+        //draw the circles in the board.
+        for (let row of grid) {
+          for (let cell of row) {
+            cell.draw(ctx);
+          }
+        }
+
+      }
+
+      function updateGrid(board){
+        //board sent from the server to update the owner of cells on clients game board
+        for (let i = 0; i < GRID_ROWS; i++) {
+          for (let j = 0; j < GRID_COLS; j++) {
+            grid[i][j].owner = board[i][j];
+          }
+        }
+      }
+
+      socket.on('your move', function(){
+        //emitted to the player whose turn it is.
+
+
+        socket.emit('user move'); 
+        //TODO add parameter of where they moved to & 
+        //update the board on the server
+
+      });
+
+      socket.on('wait for move', function(gameBoard){
+        //emitted to the player where its their opponents turn. - no input allowed.
+
+        //update the game board from the server.
+
       });
 
       function createGameWithCode(){
@@ -275,9 +340,6 @@
       document.getElementById("themeDark").addEventListener("click", changeThemeDark);
       document.getElementById("themeCream").addEventListener("click", changeThemeCream);
 
-
-
-
       //temp i hope - will be saved in the cookie as the theme? put in a function?
       var bgcolor = COLOR_BACKGROUND;
       var frameColor = COLOR_FRAME;
@@ -289,60 +351,77 @@
         document.getElementById("themeClassic").style.backgroundColor = COLOR_BUTTON_CLASSIC;
         document.getElementById("themeDark").style.backgroundColor = COLOR_BUTTON_CLASSIC;
         document.getElementById("themeCream").style.backgroundColor = COLOR_BUTTON_CLASSIC;
-        document.getElementById("randButton").style.backgroundColor = COLOR_BUTTON_CLASSIC;
-        document.getElementById("codeButton").style.backgroundColor = COLOR_BUTTON_CLASSIC;
-        document.getElementById("enterNewUsernameButton").style.backgroundColor = COLOR_BUTTON_CLASSIC;
-
         document.getElementById("themeClassic").style.color = COLOR_BUTTON_TEXT_CLASSIC;
         document.getElementById("themeDark").style.color = COLOR_BUTTON_TEXT_CLASSIC;
         document.getElementById("themeCream").style.color = COLOR_BUTTON_TEXT_CLASSIC;
-        document.getElementById("randButton").style.color = COLOR_BUTTON_TEXT_CLASSIC;
-        document.getElementById("codeButton").style.color = COLOR_BUTTON_TEXT_CLASSIC
+        
         document.getElementById("enterNewUsernameButton").style.color = COLOR_BUTTON_TEXT_CLASSIC;
-
+        document.getElementById("enterNewUsernameButton").style.backgroundColor = COLOR_BUTTON_CLASSIC;
         //background and text
         document.body.style.background = COLOR_BACKGROUND;
         document.getElementById("userNameDisplay").style.color = COLOR_TEXT_CLASSIC;
-        document.getElementById("gameCode").style.color = COLOR_TEXT_CLASSIC;
+        
         document.getElementById("enterNewUsername").style.color = COLOR_TEXT_CLASSIC;
         document.getElementById("connectFourTitle").style.color = COLOR_TEXT_CLASSIC;
 
         //change the colors of the connect 4 board.
         bgcolor = COLOR_BACKGROUND;
-        //drawBackground();
         frameColor = COLOR_FRAME;
         bottomColor = COLOR_FRAME_BUTT;
-        //drawGrid();
+        
+        drawBackground();
 
-      }
+        try{
+          drawGrid();
+          document.getElementById("randButton").style.backgroundColor = COLOR_BUTTON_CLASSIC;
+          document.getElementById("codeButton").style.backgroundColor = COLOR_BUTTON_CLASSIC;
+          document.getElementById("randButton").style.color = COLOR_BUTTON_TEXT_CLASSIC;
+          document.getElementById("codeButton").style.color = COLOR_BUTTON_TEXT_CLASSIC
+          document.getElementById("gameCode").style.color = COLOR_TEXT_CLASSIC;
+
+        }
+        catch (err){
+
+        }
+    }
 
       function changeThemeDark(){
         //button colors.
         document.getElementById("themeClassic").style.backgroundColor = COLOR_BUTTON_DARK;
         document.getElementById("themeDark").style.backgroundColor = COLOR_BUTTON_DARK;
         document.getElementById("themeCream").style.backgroundColor = COLOR_BUTTON_DARK;
-        document.getElementById("randButton").style.backgroundColor = COLOR_BUTTON_DARK;
-        document.getElementById("codeButton").style.backgroundColor = COLOR_BUTTON_DARK;
-        document.getElementById("enterNewUsernameButton").style.backgroundColor = COLOR_BUTTON_DARK;
-
         document.getElementById("themeClassic").style.color = COLOR_BUTTON_TEXT_DARK;
         document.getElementById("themeDark").style.color = COLOR_BUTTON_TEXT_DARK;
         document.getElementById("themeCream").style.color = COLOR_BUTTON_TEXT_DARK;
-        document.getElementById("randButton").style.color = COLOR_BUTTON_TEXT_DARK;
-        document.getElementById("codeButton").style.color = COLOR_BUTTON_TEXT_DARK;
+        
         document.getElementById("enterNewUsernameButton").style.color = COLOR_BUTTON_TEXT_DARK;
+        document.getElementById("enterNewUsernameButton").style.backgroundColor = COLOR_BUTTON_DARK;
         //background and text
         document.body.style.background = COLOR_BACKGROUND_DARK;
         document.getElementById("userNameDisplay").style.color = COLOR_TEXT_DARK;
-        document.getElementById("gameCode").style.color = COLOR_TEXT_DARK;
-        document.getElementById("enterNewUsername").style.color = COLOR_TEXT_DARK; //this doesnt work.
+        
+        document.getElementById("enterNewUsername").style.color = COLOR_TEXT_DARK;
         document.getElementById("connectFourTitle").style.color = COLOR_TEXT_DARK;
-        //change the colors of the connect 4 board
+
+        //change the colors of the connect 4 board.
         bgcolor = COLOR_BACKGROUND_DARK;
         frameColor = COLOR_FRAME_DARK;
         bottomColor = COLOR_FRAME_BUTT_DARK;
-        //drawBackground();
-        //drawGrid();
+        
+        drawBackground();
+
+        try {
+          drawGrid();
+          document.getElementById("randButton").style.backgroundColor = COLOR_BUTTON_DARK;
+          document.getElementById("codeButton").style.backgroundColor = COLOR_BUTTON_DARK;
+          document.getElementById("randButton").style.color = COLOR_BUTTON_TEXT_DARK;
+          document.getElementById("codeButton").style.color = COLOR_BUTTON_TEXT_DARK
+          document.getElementById("gameCode").style.color = COLOR_TEXT_DARK;
+
+        }
+        catch (err){
+
+        }
       }
 
       function changeThemeCream(){
@@ -350,33 +429,41 @@
         document.getElementById("themeClassic").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
         document.getElementById("themeDark").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
         document.getElementById("themeCream").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
-        document.getElementById("randButton").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
-        document.getElementById("codeButton").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
         document.getElementById("enterNewUsernameButton").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
 
         document.getElementById("themeClassic").style.color = COLOR_BUTTON_TEXT_CRMSCRN;
         document.getElementById("themeDark").style.color = COLOR_BUTTON_TEXT_CRMSCRN;
         document.getElementById("themeCream").style.color = COLOR_BUTTON_TEXT_CRMSCRN;
-        document.getElementById("randButton").style.color = COLOR_BUTTON_TEXT_CRMSCRN;
-        document.getElementById("codeButton").style.color = COLOR_BUTTON_TEXT_CRMSCRN
         document.getElementById("enterNewUsernameButton").style.color = COLOR_BUTTON_TEXT_CRMSCRN;
 
         //background and text
         document.body.style.background = COLOR_BACKGROUND_CRMSCRN;
         document.getElementById("userNameDisplay").style.color = COLOR_TEXT_CRMSCRN;
-        document.getElementById("gameCode").style.color = COLOR_TEXT_CRMSCRN;
         document.getElementById("enterNewUsername").style.color = COLOR_TEXT_CRMSCRN; //doesnt work/
         document.getElementById("connectFourTitle").style.color = COLOR_TEXT_CRMSCRN;
 
         //change the colors of the connect 4 board
         bgcolor = COLOR_BACKGROUND_CRMSCRN;
-        //drawBackground();
         frameColor = COLOR_FRAME_CRMSCRN;
         bottomColor = COLOR_FRAME_BUTT_CRMSCRN;
-        //drawGrid();
+        
+        drawBackground();
 
+        try{
+          drawGrid(); 
+          document.getElementById("randButton").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
+          document.getElementById("codeButton").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
+          document.getElementById("randButton").style.color = COLOR_BUTTON_TEXT_CRMSCRN;
+          document.getElementById("codeButton").style.color = COLOR_BUTTON_TEXT_CRMSCRN;
+          document.getElementById("gameCode").style.color = COLOR_TEXT_CRMSCRN;
+
+        }
+        catch (err){
+          
+        }
       }
 
+      
 
       function setCookie(cname, cvalue, exdays) {
         var d = new Date();
@@ -401,20 +488,33 @@
       }
 
       function checkCookie() {
+        console.log('checking cookie, existing cookies ' + listCookies());
         var user = getCookie("username");
         if (user != "") {
           //they have been here before, give them their userName
-          $('#userNameDisplay').text('Your usename is ' + user + '.');
-        } else {
-          //give them a random username from the server and set their cookie that way,
-          
+          $('#userNameDisplay').text('Your username is ' + user + '.');
+        }
+         else {
+          //use the username that they have for their cookie.
+          user = currentUsername;
+          console.log('current username is ' + user);
+          if (user != "" && user != null) {
+            setCookie("username", user, 30);
+          }
         }
       }
 
+      function listCookies() {
+          var theCookies = document.cookie.split(';');
+          var aString = '';
+          for (var i = 1 ; i <= theCookies.length; i++) {
+              aString += i + ' ' + theCookies[i-1] + "\n";
+          }
+          return aString;
+      }
 
       //CONECT 4 GAME
       // game parameters
-
       const GRID_CIRCLE = 0.7; // circle size as a fraction of cell size
       const GRID_COLS = 7; // number of game columns
       const GRID_ROWS = 6; // number of game rows
@@ -439,6 +539,7 @@
           this.winner = false;
         }
 
+        //determines if there is a peice already in the cell.
         contains(x, y) {
           return x > this.left && x < this.right && y > this.top && y < this.bot;
         }
@@ -446,16 +547,16 @@
         // draw the circle or hole
         draw( /** @type {CanvasRenderingContext2D} */ ctx) {
 
-          // owner colour - - going to need to change this?
+          // owner colour 
           let color = this.owner == null ? bgcolor : this.owner ? COLOR_PLAY1 : COLOR_PLAY2;
-
+                    
           // draw the circle
           ctx.fillStyle = color;
           ctx.beginPath();
           ctx.arc(this.cx, this.cy, this.r, 0, Math.PI * 2);
           ctx.fill();
 
-          // draw highlighting
+          // draw highlighting -- ???
           if (this.winner || this.highlight != null) {
 
             // colour
@@ -471,131 +572,32 @@
         }
       }
 
-      class Player {
-        constructor(id, uname, colorscheme, isInGame, gameCode){
-          this.id = id;
-          this.uname = uname;
-          this.colorscheme = colorscheme;
-          this.isInGame = isInGame;
-          this.gameCode = gameCode;
-          this.cells = new Array(Cell);
-        }
-
-      }
-      // set up the canvas and context -- i should set this up once the game has beeen started.
+      // set up the canvas and context
       var canv = document.createElement("canvas");
       var ctx = canv.getContext("2d");
 
       // game variables...?
-      var gameOver, gameTied, grid = [], player1Turn;
+      var gameOver, gameTied, grid = [];
+      var player1Turn = true;
 
       // dimensions
       var height, width, margin;
       setDimensions();
 
       // event listeners
-      canv.addEventListener("click", click);
+      canv.addEventListener("click", selectCell);
       canv.addEventListener("mousemove", highlightGrid);
       window.addEventListener("resize", setDimensions);
             
       // game loop for a game
-      //requestAnimationFrame(loop);
-
-      function loop() {
+      /*function loop() {
         // draw
         drawBackground();
         drawGrid();
         drawText();
         // call the next frame
         requestAnimationFrame(loop);
-      }
-
-      //move to server.
-      function checkWin(row, col) {
-        // get all the cells from each direction
-        let diagL = [],
-          diagR = [],
-          horiz = [],
-          vert = [];
-        for (let i = 0; i < GRID_ROWS; i++) {
-          for (let j = 0; j < GRID_COLS; j++) {
-
-            // horizontal cells
-            if (i == row) {
-              horiz.push(grid[i][j]);
-            }
-
-            // vertical cells
-            if (j == col) {
-              vert.push(grid[i][j]);
-            }
-
-            // top left to bottom right
-            if (i - j == row - col) {
-              diagL.push(grid[i][j]);
-            }
-
-            // top right to bottom left
-            if (i + j == row + col) {
-              diagR.push(grid[i][j]);
-            }
-          }
-        }
-
-        // if any have four in a row, return a win!
-        return connect4(diagL) || connect4(diagR) || connect4(horiz) || connect4(vert);
-      }
-
-      //sub function to check the winner of each state for connect 4
-      function connect4(cells = []) {
-        let count = 0,
-          lastOwner = null;
-        let winningCells = [];
-        //for all of the cells in the array.
-        for (let i = 0; i < cells.length; i++) {
-
-          // initialization w/ no owner reset count
-          if (cells[i].owner == null) {
-            count = 0;
-            winningCells = [];
-          }
-          // same owner, add to the count
-          else if (cells[i].owner == lastOwner) {
-            count++;
-            winningCells.push(cells[i]);
-          }
-          // new owner, new count
-          else {
-            count = 1;
-            winningCells = [];
-            winningCells.push(cells[i]);
-          }
-
-          lastOwner = cells[i].owner;
-
-          // four wins
-          if (count == 4) {
-            for (let cell of winningCells) {
-              cell.winner = true;
-            }
-            return true;
-          }
-        }
-        return false;
-      }
-
-      //TODO probably change this so the flow is different
-      function click(ev) {
-
-        if (gameOver) {
-          //to be removed?
-          newGame();
-          return;
-        }
-
-        //select the cell based on what was clicked.
-        selectCell();
-      }
+      }*/
 
       function createGrid() {
         grid = [];
@@ -629,11 +631,11 @@
       }
 
       function drawBackground() {
-        console.log('bgcolor is ' + bgcolor);
         ctx.fillStyle = bgcolor;
         ctx.fillRect(0, 0, width, height);
       }
 
+      //TODO -- maybe add parameter to throw a grid in
       function drawGrid() {
 
         // frame and butt
@@ -713,14 +715,10 @@
       }
 
       function highlightGrid( /** @type {MouseEvent} */ ev) {
-        if (gameOver) {
-          return;
-        }
         highlightCell(ev.clientX, ev.clientY);
       }
 
-      //set up logic so it requires 2 players to begin. - server 
-      function newGame() {
+      /*function newGame() {
 
         socket.emit('new game');
 
@@ -728,10 +726,71 @@
         gameOver = false;
         gameTied = false;
         createGrid();
+      }*/
+
+      //used to update when the cell is clicked. - send to server
+      function selectCell() {
+
+        let highlighting = false;
+        OUTER: for (let row of grid) {
+          for (let cell of row) {
+            if (cell.highlight != null) {
+              highlighting = true;
+              cell.highlight = null;
+              cell.owner = player1Turn;
+              if (checkWin(cell.row, cell.col)) {
+                gameOver = true;
+              }
+              console.log('user move detected at [' + cell.row + ' , ' + cell.col + ']');
+              break OUTER;
+            }
+          }
+        }
+
+        // don't allow selection if no highlighting
+        if (!highlighting) {
+          return;
+        }
+
+        // check for a tied game
+        if (!gameOver) {
+          gameTied = true;
+          OUTER: for (let row of grid) {
+            for (let cell of row) {
+              if (cell.owner == null) {
+                gameTied = false;
+                break OUTER;
+              }
+            }
+          }
+
+          // set game over
+          if (gameTied) {
+            gameOver = true;
+          }
+        }
+
+        // switch the player if no game over
+        if (!gameOver) {
+          player1Turn = !player1Turn;
+        }
+        socket.emit('user move');
       }
 
-      //used to update when the cell is clicked. - send to server?
-      function selectCell() {
+      function setDimensions() {
+        height = window.innerHeight;
+        width = window.innerWidth;
+        canv.height = height;
+        canv.width = width;
+        margin = MARGIN * Math.min(height, width);
+
+      }
+  </script>
+</body>
+
+</html>
+<!--
+       function selectCellOLD() {
 
         let highlighting = false;
         OUTER: for (let row of grid) {
@@ -777,23 +836,4 @@
         }
         socket.emit('user move');
       }
-
-      function setDimensions() {
-        height = window.innerHeight;
-        width = window.innerWidth;
-        canv.height = height;
-        canv.width = width;
-        margin = MARGIN * Math.min(height, width);
-
-        //to be removed?
-        newGame();
-
-      }
-  </script>
-</body>
-
-</html>
-
-<!--
-
-    -->
+-->
