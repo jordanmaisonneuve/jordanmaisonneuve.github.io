@@ -168,14 +168,11 @@
           $('#userNameDisplay').text(dispText);
       });
 
-      //server has said we can start a game...
       socket.on('start game', function(gb){
         removeElementsForGame();
         //draw a connect 4 board.  
         createBoard(gb);
-        //TODO not their turn, disable input, show waiting text. 
-
-        //... remove event listener for clicks on the canvas??
+        //TODO not their turn, disable input
         canv.removeEventListener("click", selectCell);
       });
 
@@ -184,8 +181,6 @@
         console.log('its your turn');
         createBoard(gb);
         //TODO - this players turn, allow them to move.
-
-        //...
         canv.addEventListener("click", selectCell);
       });
 
@@ -225,22 +220,25 @@
             grid[i][j].owner = board[i][j];
           }
         }
+        try{
+          drawBackground();
+          drawGrid();
+        }
+        catch(err){}
       }
 
-      socket.on('your move', function(){
+      socket.on('your move', function(gameBoard){
         //emitted to the player whose turn it is.
-
-
-        socket.emit('user move'); 
-        //TODO add parameter of where they moved to & 
-        //update the board on the server
-
+        console.log('your move!');
+        updateGrid(gameBoard);
+        canv.addEventListener("click", selectCell);
       });
 
       socket.on('wait for move', function(gameBoard){
         //emitted to the player where its their opponents turn. - no input allowed.
-
-        //update the game board from the server.
+        console.log('wait for move!');
+        updateGrid(gameBoard);
+        canv.removeEventListener("click", selectCell);
 
       });
 
@@ -270,8 +268,6 @@
         var myobj = document.getElementById(id);
         myobj.remove();
       }
-
-
 
       // colours -- Classic
       const COLOR_BACKGROUND = "lightyellow";
@@ -373,9 +369,7 @@
         try{
           drawGrid(); 
         }
-        catch (err){
-          
-        }
+        catch (err){}
         try{
           document.getElementById("randButton").style.backgroundColor = COLOR_BUTTON_CLASSIC;
           document.getElementById("codeButton").style.backgroundColor = COLOR_BUTTON_CLASSIC;
@@ -384,9 +378,7 @@
           document.getElementById("gameCode").style.color = COLOR_TEXT_CLASSIC;
 
         }
-        catch (err){
-
-        }
+        catch (err){}
     }
 
       function changeThemeDark(){
@@ -416,20 +408,16 @@
         try{
           drawGrid(); 
         }
-        catch (err){
-          
-        }
+        catch (err){}
+
         try {
           document.getElementById("randButton").style.backgroundColor = COLOR_BUTTON_DARK;
           document.getElementById("codeButton").style.backgroundColor = COLOR_BUTTON_DARK;
           document.getElementById("randButton").style.color = COLOR_BUTTON_TEXT_DARK;
           document.getElementById("codeButton").style.color = COLOR_BUTTON_TEXT_DARK
           document.getElementById("gameCode").style.color = COLOR_TEXT_DARK;
-
         }
-        catch (err){
-
-        }
+        catch (err){}
       }
 
       function changeThemeCream(){
@@ -460,24 +448,18 @@
         try{
           drawGrid(); 
         }
-        catch (err){
+        catch (err){}
 
-        }
         try{
-          
           document.getElementById("randButton").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
           document.getElementById("codeButton").style.backgroundColor = COLOR_BUTTON_CRMSCRN;
           document.getElementById("randButton").style.color = COLOR_BUTTON_TEXT_CRMSCRN;
           document.getElementById("codeButton").style.color = COLOR_BUTTON_TEXT_CRMSCRN;
           document.getElementById("gameCode").style.color = COLOR_TEXT_CRMSCRN;
+        }
+        catch (err){}
 
-        }
-        catch (err){
-          
-        }
       }
-
-      
 
       function setCookie(cname, cvalue, exdays) {
         var d = new Date();
@@ -602,16 +584,6 @@
       canv.addEventListener("click", selectCell);
       canv.addEventListener("mousemove", highlightGrid);
       window.addEventListener("resize", setDimensions);
-            
-      // game loop for a game
-      /*function loop() {
-        // draw
-        drawBackground();
-        drawGrid();
-        drawText();
-        // call the next frame
-        requestAnimationFrame(loop);
-      }*/
 
       function createGrid() {
         grid = [];
@@ -649,7 +621,6 @@
         ctx.fillRect(0, 0, width, height);
       }
 
-      //TODO -- maybe add parameter to throw a grid in
       function drawGrid() {
 
         // frame and butt
@@ -752,8 +723,22 @@
             }
           }
         }
+      }
 
-        // don't allow selection if no highlighting
+      function setDimensions() {
+        height = window.innerHeight;
+        width = window.innerWidth;
+        canv.height = height;
+        canv.width = width;
+        margin = MARGIN * Math.min(height, width);
+
+      }
+  </script>
+</body>
+
+</html>
+<!--
+          // don't allow selection if no highlighting
         /*if (!highlighting) {
           return;
         }
@@ -781,17 +766,4 @@
           player1Turn = !player1Turn;
         }
         socket.emit('user move');*/
-      }
-
-      function setDimensions() {
-        height = window.innerHeight;
-        width = window.innerWidth;
-        canv.height = height;
-        canv.width = width;
-        margin = MARGIN * Math.min(height, width);
-
-      }
-  </script>
-</body>
-
-</html>
+-->

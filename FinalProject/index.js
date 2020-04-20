@@ -67,12 +67,30 @@ io.on('connection', function(socket){
   socket.on('user move', function (cellSelected){
     console.log('user move detected from: ' + getUsername(socket) + '\ncell selected was ' + cellSelected);
     //going to need to send information to update the display for the connected users
-    var game = getGame(socket.id);
-    //update the game board with their move, send parameter....
-    //game.grid[cellSelected[0]][cellSelected[1]] = game.player1Turn;
+    var game = getGame(socket.id); //get the game associated with this socket.
+    
+    //TODO -- check for winner...
+
+
+    var row, col, otherSocket;
+    row = cellSelected[0];
+    col = cellSelected[1];
+    
+    if (game.player1Turn){
+      otherSocket = game.player2;
+    }
+    else {
+      otherSocket = game.player1;
+    }
+
+    game.grid[row][col] = isPlayer1(socket); // true/false based on whose turn.
+    console.table(game.grid);
+    console.table(activeGamesList);
     game.player1Turn = !game.player1Turn;
 
     //update the moves for the users.
+    socket.emit('wait for move', game.grid); //socket that just moved
+    io.to(otherSocket).emit('your move', game.grid); //other player
 
   });
 
@@ -459,4 +477,13 @@ function getUser(socket){
     }
   }
   return null;
+}
+
+function isPlayer1(socket){
+  for (var i = 0; i < activeGamesList.length; i++){
+    if (activeGamesList[i].player1 === socket.id){
+      return true;
+    }
+  }
+  return false;
 }
