@@ -4,7 +4,7 @@
   "description": "wicked awesome",
   "dependencies": {
     "express": "^4.15.2",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "socket.io": "^2.3.0"
   },
   "main": "index.js",
